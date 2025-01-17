@@ -216,6 +216,7 @@ body {
 .blogs-section {
     width: 100%;
     /* top: 50%; */
+    
     padding: 40px;
     background: #fff;
     margin: 20px auto;
@@ -229,7 +230,7 @@ body {
     gap: 20px;
     flex-wrap: wrap;
     justify-content: space-around;
-    margin-top: 20px;
+    margin-top: -40px;
     max-width: 100%; 
     box-sizing: border-box;
 }
@@ -245,6 +246,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    cursor: pointer;
 }
 
 .blog-card:hover {
