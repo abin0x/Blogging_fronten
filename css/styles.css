@@ -97,16 +97,26 @@ body {
     max-width: 1200px;
     border-radius: 10px;
 }
+.media-albums h2 {
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 20px; /* Reduce the bottom margin */
+    margin-top: 0; /* Remove any default top margin */
+    position: relative; /* Optional, for fine-tuning */
+    top: -40px; /* Move upward by 10px */
+}
+
 
 .albums-container {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
     gap: 20px;
-    margin-top: 20px;
+    margin-top: -40px;
+    /* margin-bottom: 800px; */
 }
 
-.album-card {
+/* .album-card {
     text-align: center;
     padding: 10px;
     border-radius: 10px;
@@ -118,6 +128,20 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+} */
+
+.album-card {
+    text-align: center;
+    padding: 12px 10px -10px 10px; /* Reduce padding */
+    border-radius: 10px;
+    background-color: #f5f5f5;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 200px; /* Reduce width */
+    height: 170px; /* Reduce height */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .album-card:hover {
@@ -125,27 +149,37 @@ body {
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
 
-.album-card img {
+/* .album-card img {
     width: 100%;
-    height: 200px;
+    height: 150px;
     border-radius: 10px;
     object-fit: cover;
     margin-bottom: 15px;
+} */
+
+.album-card img {
+    width: 100%;
+    height: 120px; /* Reduce image height */
+    border-radius: 10px;
+    object-fit: cover;
+    margin-bottom:2px; /* Reduce bottom margin */
 }
 
 .album-card h3 {
-    font-size: 1.1em;
+    font-size: 1em; /* Reduce font size */
     font-weight: bold;
     color: #333;
-    margin-bottom: 10px;
+    margin-bottom: 5px; /* Reduce margin */
 }
 
 .album-card p {
-    font-size: 0.9em;
+    font-size: 1.0em;
+    padding-bottom: -5px;
     color: #777;
+    margin-top: 0; /* Remove any unnecessary top margin */
 }
 
-.view-all {
+/* .view-all {
     margin-top: 20px;
     padding: 10px 20px;
     background-color: #007BFF;
@@ -155,8 +189,24 @@ body {
     cursor: pointer;
     font-weight: bold;
     transition: background-color 0.3s;
-    /* margin-right: 200px; */
+   
+} */
+.view-all {
+    position: absolute; /* Use absolute positioning */
+    top: 23%; /* Center vertically relative to parent */
+    right: 50px; /* Position the button 20px from the right */
+    transform: translateY(-50%); /* Adjust to vertically align properly */
+    padding: 8px 10px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
 }
+
+
 
 .view-all:hover {
     background-color: #0056b3;
@@ -165,6 +215,7 @@ body {
 /* Blogs Section */
 .blogs-section {
     width: 100%;
+    /* top: 50%; */
     padding: 40px;
     background: #fff;
     margin: 20px auto;
@@ -208,7 +259,14 @@ body {
     object-fit: cover;
     margin-bottom: 15px;
 }
-
+.blogs-section h2 {
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 20px;
+    margin-top: 0;
+    position: relative;
+    top: -40px;
+}
 .blog-card h3 {
     font-size: 1.3em;
     margin-bottom: 10px;
