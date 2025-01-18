@@ -169,7 +169,7 @@ async function fetchBlogs(page = 1) {
         document.querySelectorAll(".read-more").forEach((button) => {
             button.addEventListener("click", () => {
                 const blogId = button.getAttribute("data-id");
-                window.location.href = `/blog-details.html?id=${blogId}`;
+                window.location.href = `try.html?id=${blogId}`;
             });
         });
 

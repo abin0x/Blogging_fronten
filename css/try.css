@@ -1,0 +1,228 @@
+/* General Styles */
+body {
+    font-family: Noto Sans, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+/* Header Section */
+.header {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* padding: 10px 20px; */
+    padding: 10px 60px;
+}
+
+.navbar .logo {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.navbar .logo img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.navbar .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+    margin-right: auto;
+}
+
+.navbar .nav-links li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.navbar .nav-links li a:hover {
+    color: #007BFF;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    padding: 5px 10px;
+}
+
+.search-box input {
+    border: none;
+    outline: none;
+    background: none;
+    padding: 5px;
+    font-size: 14px;
+    flex: 1;
+}
+
+.search-box button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.search-box button:hover {
+    background-color: #0056b3;
+}
+
+
+/* Main Content and Sidebar */
+.container {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.blog-content {
+    flex: 3;
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.blog-content img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.blog-content h2 {
+    margin-bottom: 1rem;
+}
+
+.blog-content p {
+    margin-bottom: 1rem;
+    line-height: 1.8;
+}
+
+.sidebar {
+    flex: 1;
+    background: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 1rem;
+}
+
+.sidebar ul li a {
+    color: #333;
+    font-weight: bold;
+}
+
+.sidebar ul li a:hover {
+    color: #007BFF;
+}
+
+/* .recent-posts {
+    margin-top: 2rem;
+}
+
+.recent-posts .recent-post-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.recent-posts .recent-post-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.recent-posts .recent-post-info h4 {
+    font-size: 1rem;
+    margin: 0 0 0.5rem 0;
+    color: #333;
+}
+
+.recent-posts .recent-post-info p {
+    font-size: 0.9rem;
+    color: #666;
+} */
+
+
+/* Style for Recent Posts Card Layout */
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.recent-post-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.recent-post-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.recent-post-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.recent-post-info {
+    padding: 16px;
+    text-align: center;
+}
+
+.recent-post-info h4 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.recent-post-info p {
+    font-size: 14px;
+    color: #666;
+}
