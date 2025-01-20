@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Details</title>
+    <link rel="stylesheet" href="../css/blog_detilas.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <a href="../index.html">
+                    <img src="../images/logoo.png" alt="Media Logo" class="logo-image">
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#">মূলপাতা</a></li>
+                <li><a href="#media-albums">মিডিয়া</a></li>
+                <li><a href="#blogs">দেয়াল চিত্র</a></li>
+                <li><a href="#contact">ইতিহাস</a></li>
+                <li><a href="#contact">বিয়ে</a></li>
+                <li><a href="#contact">কবর</a></li>
+                <li><a href="#contact">জীবন</a></li>
+                <li><a href="#contact">পরকাল</a></li>
+            </ul>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search...">
+                <button id="search-btn">Search</button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Blog Content -->
+        <section id="blog-container" class="blog-content">
+            <!-- Blog Title and Meta Information -->
+            <div class="blog-meta-top">
+                <h2 class="blog-title" id="blog-title">Blog Title</h2>
+                <div class="blog-meta-row">
+                    <span class="blog-author" id="blog-author">By: Author Name</span>
+                    <span class="blog-date" id="blog-date">Published: Date</span>
+                    <span class="blog-read-time" id="blog-read-time">Read Time: X mins</span>
+                </div>
+            </div>
+        
+            <!-- Blog Category, Tags, Views, and Reactions -->
+            <div class="blog-meta-bottom">
+                <span class="blog-category" id="blog-category">Category: Category Name</span>
+                <span class="blog-tags" id="blog-tags">Tags: Tag1, Tag2</span>
+                <span class="blog-views" id="blog-views">Views: 100</span>
+                <span class="blog-good-reactions" id="blog-good-reactions">👍 50</span>
+                <span class="blog-bad-reactions" id="blog-bad-reactions">👎 10</span>
+            </div>
+        
+            <!-- Action Buttons (Copy Link and Download PDF) -->
+            <div class="blog-actions">
+                <button id="download-pdf" class="blog-action-btn">📄 Download PDF</button>
+                <button id="copy-link" class="blog-action-btn">🔗 Copy Link</button>
+            </div>
+        
+            <!-- Blog Image -->
+            <img id="blog-image" class="blog-image" src="path_to_image.jpg" alt="Blog Image">
+        
+            <!-- Blog Content -->
+            <div class="blog-content">
+                <p id="blog-content">Blog content will go here...</p>
+            </div>
+        </section>
+        
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Categories -->
+            <div class="categories">
+                <h2>Categories</h2>
+                <ul id="categories-list">
+                    <!-- Dynamic category list will be loaded here -->
+                </ul>
+            </div>
+
+            <!-- Recent Posts -->
+            <div class="recent-posts">
+                <h2>Recent Posts</h2>
+                <div id="recent-posts" class="card-container">
+                    <!-- Recent posts will be dynamically loaded here -->
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script src="../js/blog_details.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+
+</body>
+</html>

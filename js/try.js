@@ -1,187 +1,81 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const blogContainer = document.getElementById("blog-container");
-    const categoriesList = document.getElementById("categories-list");
-    const recentPostsList = document.getElementById("recent-posts");
-    const downloadPdfButton = document.getElementById("download-pdf");
+document.addEventListener('DOMContentLoaded', function () {
+    const categorySelect = document.getElementById('categorySelect');
+    const blogsContainer = document.getElementById('blogsContainer');
 
-    // Get the blog ID from the URL query parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const blogId = urlParams.get("id");
-
-    const blogApiUrl = `http://127.0.0.1:8000/api/blogs/${blogId}/`;
-    const categoriesApiUrl = "http://127.0.0.1:8000/api/categories/";
-    const categoryBlogsApiUrl = "http://127.0.0.1:8000/api/cat/";
-
-    // Fetch and display blog details
-    const fetchBlogDetails = () => {
-        fetch(blogApiUrl)
-            .then(response => response.json())
-            .then(blog => {
-                const {
-                    title,
-                    content,
-                    featured_image,
-                    category,
-                    author,
-                    created_at,
-                    reading_time,
-                    views_count,
-                    good_reactions_count,
-                    bad_reactions_count
-                } = blog;
-
-                blogContainer.innerHTML = `
-                    <img src="${featured_image}" alt="Blog Image" class="blog-img">
-                    <div class="blog-meta-top">
-                        <h2 class="blog-title">${title}</h2>
-                        <div class="blog-meta-row">
-                            <span class="blog-author">Author: ${author}</span>
-                            <span class="blog-date">Published: ${created_at}</span>
-                            <span class="blog-read-time">Read Time: ${reading_time} mins</span>
-                        </div>
-                    </div>
-                    <div class="blog-meta-bottom">
-                        <span class="blog-category">Category: ${category.name}</span>
-                        <button id="download-pdf" class="blog-action-btn">📄 Download PDF</button>
-                        <button id="copy-link" class="blog-action-btn">🔗 Copy Link</button>
-                        <span class="blog-views">Views: ${views_count}</span>
-                        <div class="reaction-buttons">
-                            <button id="good-reaction" class="reaction-btn">👍 ${good_reactions_count}</button>
-                            <button id="bad-reaction" class="reaction-btn">👎 ${bad_reactions_count}</button>
-                        </div>
-                    </div>
-                    <p class="blog-content">${content}</p>
-                `;
-
-                // Event listener for Download PDF button
-                document.getElementById("download-pdf").addEventListener("click", () => {
-                    // Trigger PDF download
-                    downloadPdf(blogId);
-                });
-
-                // Event listener for Copy Link button
-                document.getElementById("copy-link").addEventListener("click", () => {
-                    navigator.clipboard.writeText(window.location.href)
-                        .then(() => alert("Blog link copied to clipboard!"))
-                        .catch(err => console.error("Failed to copy link:", err));
-                });
-
-                // Event listeners for Reactions
-                document.getElementById("good-reaction").addEventListener("click", () => {
-                    handleReaction('good');
-                });
-
-                document.getElementById("bad-reaction").addEventListener("click", () => {
-                    handleReaction('bad');
-                });
-
-                fetchBlogsByCategory(category.id);
-            })
-            .catch(error => {
-                console.error("Error fetching blog details:", error);
-                blogContainer.innerHTML = `<p>Error loading blog details.</p>`;
-            });
-    };
-
-    // Handle reactions (good or bad)
-    const handleReaction = (reactionType) => {
-        const reactionApiUrl = `http://127.0.0.1:8000/api/blogs/${blogId}/react/`;
-        const reactionData = { reaction_type: reactionType };
-
-        fetch(reactionApiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-            },
-            body: JSON.stringify(reactionData)
-        })
+    // Fetch Categories
+    fetch('http://127.0.0.1:8000/api/categories/')
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
-                alert(`You reacted with ${reactionType}`);
-                fetchBlogDetails(); // Refresh blog details to update the reaction count
-            } else {
-                alert('Failed to react. Please try again.');
-            }
-        })
-        .catch(error => {
-            console.error("Error reacting to blog:", error);
-            alert('Error reacting to blog. Please try again.');
-        });
-    };
-
-    // Fetch categories for filtering
-    const fetchCategories = () => {
-        fetch(categoriesApiUrl)
-            .then(response => response.json())
-            .then(categories => {
-                categoriesList.innerHTML = categories
-                    .map(category => `
-                        <li>
-                            <a href="#" class="category-link" data-category-id="${category.id}">
-                                ${category.name}
-                            </a>
-                        </li>
-                    `)
-                    .join("");
-
-                document.querySelectorAll(".category-link").forEach(link => {
-                    link.addEventListener("click", e => {
-                        e.preventDefault();
-                        const categoryId = e.target.getAttribute("data-category-id");
-                        fetchBlogsByCategory(categoryId);
-                    });
-                });
-            })
-            .catch(error => {
-                console.error("Error fetching categories:", error);
-                categoriesList.innerHTML = `<p>Error loading categories.</p>`;
+            data.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                categorySelect.appendChild(option);
             });
-    };
+        })
+        .catch(error => console.error('Error fetching categories:', error));
 
-    // Fetch blogs by category
-    const fetchBlogsByCategory = (categoryId) => {
-        fetch(`${categoryBlogsApiUrl}${categoryId}/blogs/`)
+    // Fetch Blogs based on category selection
+    categorySelect.addEventListener('change', function (e) {
+        const categoryId = e.target.value;
+        if (categoryId) {
+            fetchBlogsByCategory(categoryId);
+        } else {
+            fetchAllBlogs();
+        }
+    });
+
+    // Function to fetch blogs based on category
+    function fetchBlogsByCategory(categoryId) {
+        fetch(`http://127.0.0.1:8000/api/cat/${categoryId}/blogs/`)
             .then(response => response.json())
             .then(blogs => {
-                recentPostsList.innerHTML = blogs
-                    .map(blog => `
-                        <a href="try.html?id=${blog.id}" class="recent-post-item">
-                            <img src="${blog.featured_image}" alt="${blog.title}" class="recent-post-img">
-                            <div class="recent-post-info">
-                                <h4>${blog.title}</h4>
-                                <p>Views: ${blog.views_count} | 👍 ${blog.good_reactions_count} | 👎 ${blog.bad_reactions_count}</p>
-                            </div>
-                        </a>
-                    `)
-                    .join("");
+                displayBlogs(blogs);
             })
-            .catch(error => {
-                console.error(`Error fetching blogs for category ${categoryId}:`, error);
-                recentPostsList.innerHTML = `<p>Error loading category blogs.</p>`;
-            });
-    };
+            .catch(error => console.error('Error fetching blogs by category:', error));
+    }
 
-    // Function to trigger PDF download using html2pdf
-    const downloadPdf = (blogId) => {
-        const element = document.getElementById("blog-container");
-
-        // Use html2pdf to generate PDF
-        html2pdf()
-            .from(element)  // Target the section to be converted to PDF
-            .toPdf()
-            .get('pdf')
-            .then(function (pdf) {
-                pdf.save(`blog_${blogId}.pdf`);  // Set the filename for the downloaded PDF
+    // Function to fetch all blogs
+    function fetchAllBlogs() {
+        fetch('http://127.0.0.1:8000/api/blogs/')
+            .then(response => response.json())
+            .then(blogs => {
+                displayBlogs(blogs);
             })
-            .catch(function (error) {
-                console.error("Error generating PDF:", error);
-                alert("Error generating PDF. Please try again.");
-            });
-    };
+            .catch(error => console.error('Error fetching all blogs:', error));
+    }
 
-    // Call the functions to fetch blog details and categories
-    fetchBlogDetails();
-    fetchCategories();
+    // Function to display blogs dynamically
+    function displayBlogs(blogs) {
+        blogsContainer.innerHTML = ''; // Clear existing blogs
+        blogs.forEach(blog => {
+            const blogCard = document.createElement('div');
+            blogCard.classList.add('blog-card');
+
+            blogCard.innerHTML = `
+                <img src="${blog.featured_image}" alt="Blog Image" class="blog-image">
+                <div class="blog-content">
+                    <h3 class="blog-title">${blog.title}</h3>
+                    <p class="blog-category">${blog.category.name}</p>
+                    <p class="blog-author">By: ${blog.author}</p>
+                    <p class="blog-content-preview">${blog.content.substring(0, 100)}...</p>
+                    <p class="blog-created-at">Created at: ${blog.created_at}</p>
+                    <p class="blog-reading-time">Reading time: ${blog.reading_time} min</p>
+                    <div class="blog-tags">
+                        ${blog.tags.map(tag => `<span class="blog-tag">${tag.name}</span>`).join('')}
+                    </div>
+                    <div class="blog-reactions">
+                        <span class="good-reactions">Good reactions: ${blog.good_reactions_count}</span>
+                        <span class="bad-reactions">Bad reactions: ${blog.bad_reactions_count}</span>
+                    </div>
+                    <span class="views-count">Views: ${blog.views_count}</span>
+                </div>
+            `;
+
+            blogsContainer.appendChild(blogCard);
+        });
+    }
+
+    // Initial fetch of all blogs when the page loads
+    fetchAllBlogs();
 });
