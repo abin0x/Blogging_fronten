@@ -139,7 +139,7 @@ async function fetchBlogs(page = 1) {
             blogCard.innerHTML = `
                 <h3>${blog.title}</h3>
                 <img src="${imageUrl}" alt="Blog Image">
-                <div class="blog-author">By ${blog.author}</div>
+                <div class="blog-author">লিখেছেন ${blog.author}</div>
                 <p>${blog.content.slice(0, 100)}...</p>
                 <div class="blog-meta">
                     <span>${formattedDate}</span>
