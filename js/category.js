@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const imageUrl = blog.featured_image || "https://via.placeholder.com/150";
         const bengaliFormattedDate = formatCreatedDate(blog.created_at);
-        const contentExcerpt = blog.content.length > 150 ? `${blog.content.slice(0, 150)}...` : blog.content;
+        const contentExcerpt = blog.content.length > 150 ? `${blog.content.slice(0, 100)}...` : blog.content;
 
         blogCard.innerHTML = `
             <h3 class="blog-title">${blog.title}</h3>
@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div class="blog-meta-row">
                     <span class="fas fa-calendar-check">${bengaliFormattedDate}</span>
                     <span class="fas fa-eye">${blog.views_count} বার</span>
-                    <span class="fas fa-hourglass">${blog.reading_time} Min Read</span>
+                    <span class="fas fa-hourglass">${blog.reading_time} min Read</span>
                 </div>
                 <hr>
                 <div class="blog-actions">
