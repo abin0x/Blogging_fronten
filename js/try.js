@@ -1,46 +1,66 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const categorySelect = document.getElementById('categorySelect');
-    const blogsContainer = document.getElementById('blogsContainer');
+    const categoryListContainer = document.getElementById('categoryListContainer'); // Container for category list
+    const blogsContainer = document.getElementById('blogsContainer'); // Container for blog cards
+    const prevButton = document.getElementById('prevPage'); // Previous page button
+    const nextButton = document.getElementById('nextPage'); // Next page button
+    const currentPageIndicator = document.getElementById('currentPage'); // Current page indicator
+    let currentCategoryId = null; // Currently selected category ID
+    let currentPage = 1; // Current page number
 
     // Fetch Categories
     fetch('http://127.0.0.1:8000/api/categories/')
         .then(response => response.json())
         .then(data => {
-            data.forEach(category => {
-                const option = document.createElement('option');
-                option.value = category.id;
-                option.textContent = category.name;
-                categorySelect.appendChild(option);
-            });
+            displayCategories(data); // Display categories as a list
         })
         .catch(error => console.error('Error fetching categories:', error));
 
-    // Fetch Blogs based on category selection
-    categorySelect.addEventListener('change', function (e) {
-        const categoryId = e.target.value;
-        if (categoryId) {
-            fetchBlogsByCategory(categoryId);
-        } else {
-            fetchAllBlogs();
-        }
-    });
+    // Function to display categories as a list
+    function displayCategories(categories) {
+        categoryListContainer.innerHTML = ''; // Clear existing categories
 
-    // Function to fetch blogs based on category
-    function fetchBlogsByCategory(categoryId) {
-        fetch(`http://127.0.0.1:8000/api/cat/${categoryId}/blogs/`)
+        // Add 'All Categories' option
+        const allCategoriesItem = document.createElement('li');
+        allCategoriesItem.textContent = 'All Categories';
+        allCategoriesItem.classList.add('category-item');
+        allCategoriesItem.addEventListener('click', () => fetchAllBlogs());
+        categoryListContainer.appendChild(allCategoriesItem);
+
+        // Add each category as a list item
+        categories.forEach(category => {
+            const categoryItem = document.createElement('li');
+            categoryItem.textContent = category.name;
+            categoryItem.classList.add('category-item');
+            categoryItem.addEventListener('click', () => {
+                currentCategoryId = category.id; // Set current category ID
+                currentPage = 1; // Reset to the first page
+                fetchBlogsByCategory(category.id);
+            });
+            categoryListContainer.appendChild(categoryItem);
+        });
+    }
+
+    // Function to fetch blogs by category
+    function fetchBlogsByCategory(categoryId, page = 1) {
+        fetch(`http://127.0.0.1:8000/api/cat/${categoryId}/blogs/?page=${page}`)
             .then(response => response.json())
-            .then(blogs => {
-                displayBlogs(blogs);
+            .then(data => {
+                displayBlogs(data.results); // Display the current page's blogs
+                updatePaginationControls(data.next, data.previous); // Update pagination buttons
+                currentPageIndicator.textContent = `Page ${page}`; // Update current page indicator
             })
             .catch(error => console.error('Error fetching blogs by category:', error));
     }
 
     // Function to fetch all blogs
-    function fetchAllBlogs() {
-        fetch('http://127.0.0.1:8000/api/blogs/')
+    function fetchAllBlogs(page = 1) {
+        currentCategoryId = null; // Reset category ID
+        fetch(`http://127.0.0.1:8000/api/blogs/?page=${page}`)
             .then(response => response.json())
-            .then(blogs => {
-                displayBlogs(blogs);
+            .then(data => {
+                displayBlogs(data.results); // Display the current page's blogs
+                updatePaginationControls(data.next, data.previous); // Update pagination buttons
+                currentPageIndicator.textContent = `Page ${page}`; // Update current page indicator
             })
             .catch(error => console.error('Error fetching all blogs:', error));
     }
@@ -74,6 +94,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
             blogsContainer.appendChild(blogCard);
         });
+    }
+
+    // Function to update pagination controls
+    function updatePaginationControls(next, previous) {
+        prevButton.disabled = !previous;
+        nextButton.disabled = !next;
+
+        prevButton.onclick = () => {
+            if (previous) {
+                const prevPage = new URL(previous).searchParams.get('page');
+                currentPage = parseInt(prevPage, 10);
+                if (currentCategoryId) {
+                    fetchBlogsByCategory(currentCategoryId, currentPage);
+                } else {
+                    fetchAllBlogs(currentPage);
+                }
+            }
+        };
+
+        nextButton.onclick = () => {
+            if (next) {
+                const nextPage = new URL(next).searchParams.get('page');
+                currentPage = parseInt(nextPage, 10);
+                if (currentCategoryId) {
+                    fetchBlogsByCategory(currentCategoryId, currentPage);
+                } else {
+                    fetchAllBlogs(currentPage);
+                }
+            }
+        };
     }
 
     // Initial fetch of all blogs when the page loads

@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(blogs => {
                 recentPostsList.innerHTML = blogs
                     .map(blog => `
-                        <a href="try.html?id=${blog.id}" class="recent-post-item">
+                        <a href="blog_details.html?id=${blog.id}" class="recent-post-item">
                             <img src="${blog.featured_image}" alt="${blog.title}" class="recent-post-img">
                             <div class="recent-post-info">
                                 <h4>${blog.title}</h4>
