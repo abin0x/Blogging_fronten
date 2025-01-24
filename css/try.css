@@ -115,7 +115,7 @@
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  width: 330px;
+  width: 320px;
   min-height: 450px; /* Set a consistent minimum height */
   display: flex;
   flex-direction: column; /* Arrange children vertically */
@@ -152,16 +152,16 @@
   font-size: 0.9rem;
   color: #777;
   padding: 0 20px;
-  margin-bottom: 10px;
+  margin-bottom: 1px;
 }
 
 /* Blog Description */
 .blog-card p {
-  font-size: 0.95rem;
-  color: #555;
-  padding: 0 20px;
+  font-size: .98rem;
+  color: #34495E;
+  padding: 0px 50px 0px 0px;
   line-height: 1.6;
-  margin-bottom: 15px;
+  margin-bottom: 1px;
 }
 
 /* Blog Meta Information */
@@ -169,7 +169,7 @@
   font-size: 0.85rem;
   color: #888;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   padding: 0 20px 10px;
 }
 /* dsds dsdsd  */
@@ -201,22 +201,6 @@
   margin-right: 5px;
 }
 
-/* Read More Button */
-.blog-card .read-more {
-  padding: 8px 16px;
-  font-size: 1rem;
-  color: #fff;
-  background: #007BFF;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.blog-card .read-more:hover {
-  background: #00A59A;
-}
-/* sdsd  */
 
 
 
@@ -239,14 +223,14 @@
   background-color: #007bff;
   color: #fff;
   border: none;
-  padding: 8px 15px;
+  padding: 10px 30px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .read-more-button:hover {
-  background-color: #0056b3;
+  background-color: #00A59A;
 }
 
 .reaction-icons {
@@ -273,7 +257,7 @@
   color: #666;
   margin: 8px 0;
   padding: 8px;
-  background: #f9f9f9;
+  /* background: #f9f9f9; */
   border-radius: 6px;
   font-weight: bold;
 }
@@ -286,6 +270,10 @@
 
 /* Icons */
 .blog-meta-row .fas {
-  font-size: .7rem;
-  color: #000000; /* Icon color */
+  font-size: .75rem;
+  color: #353434; /* Icon color */
 }
+
+
+
+
