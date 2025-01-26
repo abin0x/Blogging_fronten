@@ -75,6 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     handleReaction('bad');
                 });
 
+                // Fetch blogs by category
                 fetchBlogsByCategory(category.id);
             })
             .catch(error => {
@@ -185,7 +186,3 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchBlogDetails();
     fetchCategories();
 });
-
-
-
-//  done 
