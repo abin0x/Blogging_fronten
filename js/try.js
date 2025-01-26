@@ -1,168 +1,195 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const categoryListContainer = document.getElementById("categoryListContainer");
-    const blogsContainer = document.getElementById("blogsContainer");
-    const prevButton = document.getElementById("prevPage");
-    const nextButton = document.getElementById("nextPage");
-    const currentPageIndicator = document.getElementById("currentPage");
+document.addEventListener("DOMContentLoaded", () => {
+    const blogContainer = document.getElementById("blog-container");
+    const categoriesList = document.getElementById("categories-list");
+    const recentPostsList = document.getElementById("recent-posts");
+    const downloadPdfButton = document.getElementById("download-pdf");
 
-    let currentCategoryId = null;
-    let currentPage = 1;
-    const API_BASE_URL = "http://127.0.0.1:8000/api";
-
-    fetchCategories();
-    fetchAllBlogs();
-
-    function fetchCategories() {
-        fetch(`${API_BASE_URL}/categories/`)
-            .then(response => response.ok ? response.json() : Promise.reject('Failed to fetch categories'))
-            .then(categories => displayCategories(categories))
-            .catch(error => console.error("Error fetching categories:", error));
+    // Ensure the necessary DOM elements are present
+    if (!blogContainer || !categoriesList || !recentPostsList) {
+        console.error("Necessary DOM elements are missing.");
+        return;
     }
 
-    function displayCategories(categories) {
-        categoryListContainer.innerHTML = "";
-        const allCategoriesItem = createCategoryItem("All Categories", null);
-        categoryListContainer.appendChild(allCategoriesItem);
-        categories.forEach(category => {
-            const categoryItem = createCategoryItem(category.name, category.id);
-            categoryListContainer.appendChild(categoryItem);
-        });
+    // Get the blog ID from the URL query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const blogId = urlParams.get("id");
+
+    if (!blogId) {
+        console.error("Blog ID is missing in the URL.");
+        return;
     }
 
-    function createCategoryItem(name, id) {
-        const categoryItem = document.createElement("li");
-        categoryItem.textContent = name;
-        categoryItem.classList.add("category-item");
-        categoryItem.addEventListener("click", () => {
-            currentCategoryId = id;
-            currentPage = 1;
-            id ? fetchBlogsByCategory(id) : fetchAllBlogs();
-        });
-        return categoryItem;
-    }
+    const blogApiUrl = `http://127.0.0.1:8000/api/blogs/${blogId}/`;
+    const categoriesApiUrl = "http://127.0.0.1:8000/api/categories/";
+    const categoryBlogsApiUrl = "http://127.0.0.1:8000/api/cat/";
 
-    function fetchBlogsByCategory(categoryId, page = 1) {
-        fetch(`${API_BASE_URL}/cat/${categoryId}/blogs/?page=${page}`)
-            .then(response => response.ok ? response.json() : Promise.reject('Failed to fetch blogs by category'))
-            .then(data => handleBlogsResponse(data, page))
-            .catch(error => console.error("Error fetching blogs by category:", error));
-    }
+    // Fetch and display blog details
+    const fetchBlogDetails = () => {
+        fetch(blogApiUrl)
+            .then(response => response.json())
+            .then(blog => {
+                const {
+                    title,
+                    content,
+                    featured_image,
+                    category,
+                    author,
+                    created_at,
+                    reading_time,
+                    views_count,
+                    good_reactions_count,
+                    bad_reactions_count,
+                    related_blogs
+                } = blog;
 
-    function fetchAllBlogs(page = 1) {
-        fetch(`${API_BASE_URL}/blogs/?page=${page}`)
-            .then(response => response.ok ? response.json() : Promise.reject('Failed to fetch blogs'))
-            .then(data => handleBlogsResponse(data, page))
-            .catch(error => console.error("Error fetching all blogs:", error));
-    }
-
-    function handleBlogsResponse(data, page) {
-        displayBlogs(data.results);
-        updatePaginationControls(data.next, data.previous);
-        currentPageIndicator.textContent = `Page ${page}`;
-    }
-
-    function displayBlogs(blogs) {
-        blogsContainer.innerHTML = "";
-        if (blogs.length === 0) {
-            blogsContainer.innerHTML = "<p>No blogs found.</p>";
-            return;
-        }
-        blogs.forEach(blog => blogsContainer.appendChild(createBlogCard(blog)));
-    }
-
-    function convertToBengaliNumber(number) {
-        const englishToBengaliDigits = { "0": "০", "1": "১", "2": "২", "3": "৩", "4": "৪", "5": "৫", "6": "৬", "7": "৭", "8": "৮", "9": "৯" };
-        return number.toString().split("").map(digit => englishToBengaliDigits[digit] || digit).join("");
-    }
-
-    function formatCreatedDate(createdAt) {
-        const regex = /^(\d{1,2}) (\w+), (\d{4}) - (\d{1,2}):(\d{2})(AM|PM)$/;
-        const match = createdAt.match(regex);
-        if (!match) return "অজ্ঞাত তারিখ";
-
-        const bengaliMonths = { "January": "জানুয়ারি", "February": "ফেব্রুয়ারি", "March": "মার্চ", "April": "এপ্রিল", "May": "মে", "June": "জুন", "July": "জুলাই", "August": "আগস্ট", "September": "সেপ্টেম্বর", "October": "অক্টোবর", "November": "নভেম্বর", "December": "ডিসেম্বর" };
-
-        let hourIn24 = parseInt(match[4]);
-        if (match[6] === "PM" && hourIn24 < 12) hourIn24 += 12;
-        else if (match[6] === "AM" && hourIn24 === 12) hourIn24 = 0;
-
-        return `${convertToBengaliNumber(match[1])} ${bengaliMonths[match[2]] || match[2]}, ${convertToBengaliNumber(match[3])}`;
-    }
-
-    function createBlogCard(blog) {
-        const blogCard = document.createElement("div");
-        blogCard.classList.add("blog-card");
-
-        const imageUrl = blog.featured_image || "https://via.placeholder.com/150";
-        const bengaliFormattedDate = formatCreatedDate(blog.created_at);
-        const contentExcerpt = blog.content.length > 150 ? `${blog.content.slice(0, 150)}...` : blog.content;
-
-        blogCard.innerHTML = `
-            <h3 class="blog-title">${blog.title}</h3>
-            <img src="${imageUrl}" alt="Blog Image" class="blog-image">
-            <div class="blog-content">
-                <p class="fas fa-user-edit"> ${blog.author}</p>
-                <p class="fas fa-clipboard-list"> ${blog.category.name}</p>
-                <p class="blog-content-preview">${contentExcerpt}</p>
-                <div class="blog-meta-row">
-                    <span class="fas fa-calendar-check">${bengaliFormattedDate}</span>
-                    <span class="fas fa-eye">${blog.views_count} বার</span>
-                    <span class="fas fa-hourglass">${blog.reading_time} Min Read</span>
-                </div>
-                <hr>
-                <div class="blog-actions">
-                    <button class="read-more-button">আরও পড়ুন</button>
-                    <div class="reaction-icons">
-                        <span class="fas fa-thumbs-up"> ${blog.good_reactions_count}</span>
-                        <span class="fas fa-thumbs-down"> ${blog.bad_reactions_count}</span>
+                blogContainer.innerHTML = `
+                    <img src="${featured_image}" alt="Blog Image" class="blog-img">
+                    <div class="blog-meta-top">
+                        <h2 class="blog-title">${title}</h2>
+                        <div class="blog-meta-row">
+                            <span class="blog-author">Author: ${author}</span>
+                            <span class="blog-date">Published: ${created_at}</span>
+                            <span class="blog-read-time">Read Time: ${reading_time} mins</span>
+                        </div>
                     </div>
-                </div>
-            </div>
-        `;
+                    <div class="blog-meta-bottom">
+                        <span class="blog-category">Category: ${category.name}</span>
+                        <button id="download-pdf" class="blog-action-btn">📄 Download PDF</button>
+                        <button id="copy-link" class="blog-action-btn">🔗 Copy Link</button>
+                        <span class="blog-views">Views: ${views_count}</span>
+                        <div class="reaction-buttons">
+                            <button id="good-reaction" class="reaction-btn">👍 ${good_reactions_count}</button>
+                            <button id="bad-reaction" class="reaction-btn">👎 ${bad_reactions_count}</button>
+                        </div>
+                    </div>
+                    <p class="blog-content">${content}</p>
+                `;
 
-        blogCard.querySelector(".read-more-button").addEventListener("click", () => {
-            window.location.href = `blog_details.html?id=${blog.id}`;
+                // Event listener for Download PDF button
+                document.getElementById("download-pdf").addEventListener("click", () => {
+                    downloadPdf(blogId);
+                });
+
+                // Event listener for Copy Link button
+                document.getElementById("copy-link").addEventListener("click", () => {
+                    navigator.clipboard.writeText(window.location.href)
+                        .then(() => alert("Blog link copied to clipboard!"))
+                        .catch(err => console.error("Failed to copy link:", err));
+                });
+
+                // Event listeners for Reactions
+                document.getElementById("good-reaction").addEventListener("click", () => {
+                    handleReaction('good');
+                });
+
+                document.getElementById("bad-reaction").addEventListener("click", () => {
+                    handleReaction('bad');
+                });
+
+                // Display related blogs in the recent posts section
+                displayRelatedBlogs(related_blogs);
+            })
+            .catch(error => {
+                console.error("Error fetching blog details:", error);
+                blogContainer.innerHTML = `<p>Error loading blog details.</p>`;
+            });
+    };
+
+    // Handle reactions (good or bad)
+    const handleReaction = (reactionType) => {
+        const reactionApiUrl = `http://127.0.0.1:8000/api/blogs/${blogId}/react/`;
+        const reactionData = { reaction_type: reactionType };
+
+        fetch(reactionApiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+            },
+            body: JSON.stringify(reactionData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`You reacted with ${reactionType}`);
+                fetchBlogDetails(); // Refresh blog details to update the reaction count
+            } else {
+                alert('Failed to react. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error("Error reacting to blog:", error);
+            alert('Error reacting to blog. Please try again.');
         });
+    };
 
-        return blogCard;
-    }
+    // Fetch categories for filtering
+    const fetchCategories = () => {
+        fetch(categoriesApiUrl)
+            .then(response => response.json())
+            .then(categories => {
+                categoriesList.innerHTML = categories
+                    .map(category => `
+                        <li>
+                            <a href="category.html" class="category-link" data-category-id="${category.id}">
+                                ${category.name}
+                            </a>
+                        </li>
+                    `)
+                    .join("");
 
-    function updatePaginationControls(next, previous) {
-        prevButton.disabled = !previous;
-        nextButton.disabled = !next;
+                document.querySelectorAll(".category-link").forEach(link => {
+                    link.addEventListener("click", e => {
+                        e.preventDefault();
+                        const categoryId = e.target.getAttribute("data-category-id");
+                        fetchBlogsByCategory(categoryId);
+                    });
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching categories:", error);
+                categoriesList.innerHTML = `<p>Error loading categories.</p>`;
+            });
+    };
 
-        prevButton.onclick = () => {
-            if (previous) {
-                const prevPage = getPageFromUrl(previous) || 1;
-                currentPage = parseInt(prevPage, 10);
-                fetchBlogs();
-            }
-        };
-
-        nextButton.onclick = () => {
-            if (next) {
-                const nextPage = getPageFromUrl(next);
-                if (nextPage) {
-                    currentPage = parseInt(nextPage, 10);
-                    fetchBlogs();
-                } else {
-                    console.error("Invalid next page URL:", next);
-                }
-            }
-        };
-    }
-
-    function getPageFromUrl(url) {
-        try {
-            const urlObj = new URL(url, window.location.origin);
-            return urlObj.searchParams.get("page");
-        } catch (error) {
-            console.error("Failed to parse URL:", url, error);
-            return null;
+    // Display related blogs in the recent posts section
+    const displayRelatedBlogs = (relatedBlogs) => {
+        if (Array.isArray(relatedBlogs) && relatedBlogs.length > 0) {
+            recentPostsList.innerHTML = relatedBlogs
+                .map(blog => `
+                    <a href="blog_details.html?id=${blog.id}" class="recent-post-item">
+                        <img src="${blog.featured_image}" alt="${blog.title}" class="recent-post-img">
+                        <div class="recent-post-info">
+                            <h4>${blog.title}</h4>
+                            <p>Views: ${blog.views_count} | 👍 ${blog.good_reactions_count} | 👎 ${blog.bad_reactions_count}</p>
+                        </div>
+                    </a>
+                `)
+                .join("");
+        } else {
+            recentPostsList.innerHTML = `<p>No related blogs found.</p>`;
         }
-    }
+    };
 
-    function fetchBlogs() {
-        currentCategoryId ? fetchBlogsByCategory(currentCategoryId, currentPage) : fetchAllBlogs(currentPage);
-    }
+    // Function to trigger PDF download using html2pdf
+    const downloadPdf = (blogId) => {
+        const element = document.getElementById("blog-container");
+
+        // Use html2pdf to generate PDF
+        html2pdf()
+            .from(element)  // Target the section to be converted to PDF
+            .toPdf()
+            .get('pdf')
+            .then(function (pdf) {
+                pdf.save(`blog_${blogId}.pdf`);  // Set the filename for the downloaded PDF
+            })
+            .catch(function (error) {
+                console.error("Error generating PDF:", error);
+                alert("Error generating PDF. Please try again.");
+            });
+    };
+
+    // Call the functions to fetch blog details and categories
+    fetchBlogDetails();
+    fetchCategories();
 });

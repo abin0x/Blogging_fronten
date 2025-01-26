@@ -4,9 +4,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const recentPostsList = document.getElementById("recent-posts");
     const downloadPdfButton = document.getElementById("download-pdf");
 
+    // Ensure the necessary DOM elements are present
+    if (!blogContainer || !categoriesList || !recentPostsList) {
+        console.error("Necessary DOM elements are missing.");
+        return;
+    }
+
     // Get the blog ID from the URL query parameters
     const urlParams = new URLSearchParams(window.location.search);
     const blogId = urlParams.get("id");
+
+    if (!blogId) {
+        console.error("Blog ID is missing in the URL.");
+        return;
+    }
 
     const blogApiUrl = `http://127.0.0.1:8000/api/blogs/${blogId}/`;
     const categoriesApiUrl = "http://127.0.0.1:8000/api/categories/";
@@ -27,7 +38,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     reading_time,
                     views_count,
                     good_reactions_count,
-                    bad_reactions_count
+                    bad_reactions_count,
+                    related_blogs
                 } = blog;
 
                 blogContainer.innerHTML = `
@@ -55,7 +67,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Event listener for Download PDF button
                 document.getElementById("download-pdf").addEventListener("click", () => {
-                    // Trigger PDF download
                     downloadPdf(blogId);
                 });
 
@@ -75,8 +86,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     handleReaction('bad');
                 });
 
-                // Fetch blogs by category
-                fetchBlogsByCategory(category.id);
+                // Display related blogs in the recent posts section
+                displayRelatedBlogs(related_blogs);
             })
             .catch(error => {
                 console.error("Error fetching blog details:", error);
@@ -112,56 +123,52 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
-    // Fetch categories for filtering
-    const fetchCategories = () => {
-        fetch(categoriesApiUrl)
-            .then(response => response.json())
-            .then(categories => {
-                categoriesList.innerHTML = categories
-                    .map(category => `
-                        <li>
-                            <a href="#" class="category-link" data-category-id="${category.id}">
-                                ${category.name}
-                            </a>
-                        </li>
-                    `)
-                    .join("");
+    // // Fetch categories for filtering
+    // const fetchCategories = () => {
+    //     fetch(categoriesApiUrl)
+    //         .then(response => response.json())
+    //         .then(categories => {
+    //             categoriesList.innerHTML = categories
+    //                 .map(category => `
+    //                     <li>
+    //                         <a href="category.html" class="category-link" data-category-id="${category.id}">
+    //                             ${category.name}
+    //                         </a>
+    //                     </li>
+    //                 `)
+    //                 .join("");
 
-                document.querySelectorAll(".category-link").forEach(link => {
-                    link.addEventListener("click", e => {
-                        e.preventDefault();
-                        const categoryId = e.target.getAttribute("data-category-id");
-                        fetchBlogsByCategory(categoryId);
-                    });
-                });
-            })
-            .catch(error => {
-                console.error("Error fetching categories:", error);
-                categoriesList.innerHTML = `<p>Error loading categories.</p>`;
-            });
-    };
+    //             document.querySelectorAll(".category-link").forEach(link => {
+    //                 link.addEventListener("click", e => {
+    //                     e.preventDefault();
+    //                     const categoryId = e.target.getAttribute("data-category-id");
+    //                     fetchBlogsByCategory(categoryId);
+    //                 });
+    //             });
+    //         })
+    //         .catch(error => {
+    //             console.error("Error fetching categories:", error);
+    //             categoriesList.innerHTML = `<p>Error loading categories.</p>`;
+    //         });
+    // };
 
-    // Fetch blogs by category
-    const fetchBlogsByCategory = (categoryId) => {
-        fetch(`${categoryBlogsApiUrl}${categoryId}/blogs/`)
-            .then(response => response.json())
-            .then(blogs => {
-                recentPostsList.innerHTML = blogs
-                    .map(blog => `
-                        <a href="blog_details.html?id=${blog.id}" class="recent-post-item">
-                            <img src="${blog.featured_image}" alt="${blog.title}" class="recent-post-img">
-                            <div class="recent-post-info">
-                                <h4>${blog.title}</h4>
-                                <p>Views: ${blog.views_count} | 👍 ${blog.good_reactions_count} | 👎 ${blog.bad_reactions_count}</p>
-                            </div>
-                        </a>
-                    `)
-                    .join("");
-            })
-            .catch(error => {
-                console.error(`Error fetching blogs for category ${categoryId}:`, error);
-                recentPostsList.innerHTML = `<p>Error loading category blogs.</p>`;
-            });
+    // Display related blogs in the recent posts section
+    const displayRelatedBlogs = (relatedBlogs) => {
+        if (Array.isArray(relatedBlogs) && relatedBlogs.length > 0) {
+            recentPostsList.innerHTML = relatedBlogs
+                .map(blog => `
+                    <a href="blog_details.html?id=${blog.id}" class="recent-post-item">
+                        <img src="${blog.featured_image}" alt="${blog.title}" class="recent-post-img">
+                        <div class="recent-post-info">
+                            <h4>${blog.title}</h4>
+                            <p>Views: ${blog.views_count} | 👍 ${blog.good_reactions_count} | 👎 ${blog.bad_reactions_count}</p>
+                        </div>
+                    </a>
+                `)
+                .join("");
+        } else {
+            recentPostsList.innerHTML = `<p>No related blogs found.</p>`;
+        }
     };
 
     // Function to trigger PDF download using html2pdf

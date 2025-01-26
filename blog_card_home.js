@@ -170,6 +170,7 @@ async function fetchBlogs(page = 1) {
             button.addEventListener("click", () => {
                 const blogId = button.getAttribute("data-id");
                 window.location.href = `html/blog_details.html?id=${blogId}`;
+                // window.location.href = `html/try.html?id=${blogId}`;
             });
         });
 
