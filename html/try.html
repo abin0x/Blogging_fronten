@@ -3,78 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Blog Post</title>
-    <link rel="stylesheet" href="../css/try.css">
-    <link rel="stylesheet" href="../css/nabvar.css">
+    <title>Media Player</title>
+    <style>
+        .media-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .media-card {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .media-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-thumbnail {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 1rem;
+        }
+
+        .player-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            color: white;
+            padding: 1rem;
+            display: none;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #444;
+            margin: 1rem 0;
+        }
+
+        .progress {
+            height: 100%;
+            background: #ff0000;
+            width: 0;
+        }
+    </style>
 </head>
 <body>
-    <header class="header">
-        <nav class="navbar">
-            <div class="logo">
-                <a href="index.html">
-                    <img src="../images/logoo.png" alt="Media Logo" class="logo-image">
-                </a>
-            </div>
-            <ul class="nav-links">
-                <li><a href="#">মূলপাতা</a></li>
-                <li><a href="#media-albums">মিডিয়া</a></li>
-                <li><a href="#blogs">দেয়াল চিত্র</a></li>
-                <li><a href="#contact">ইতিহাস</a></li>
-                <li><a href="#contact">বিয়ে</a></li>
-                <li><a href="#contact">কবর</a></li>
-                <li><a href="#contact">জীবন</a></li>
-                <li><a href="./html/try.html">লেখালিখি</a></li>
-                <li><a href="./html/category.html">ক্যাটাগরিসমূহ</a></li>
-            </ul>
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="Search...">
-                <button id="search-btn">Search</button>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <h1>আপনার লেখাটি শেয়ার করুন ✍️</h1>
-        
-        <form id="blogForm">
-            <div class="form-group">
-                <label for="title">টাইটেল : </label>
-                <input type="text" id="title" name="title" required placeholder="আপনার লেখার শিরোনাম দিন....">
-            </div>
+    <div class="media-container">
+        <h1>Media Library</h1>
+        <div class="media-grid" id="mediaGrid"></div>
+    </div>
 
-            <div class="form-group">
-                <label for="content">বিস্তারিত : </label>
-                <textarea id="content" name="content" required placeholder="আপনার লেখা বিস্তারিতভাবে উপস্থাপন করুন...."></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="name">লেখকের নাম : </label>
-                <input type="text" id="name" name="name" required placeholder="এখানে লেখকের পূর্ণ নাম দিন....">
-            </div>
-
-            <div class="form-group">
-                <label for="phone">ফোন নাম্বার : </label>
-                <input type="tel" id="phone_number" name="phone_number" required 
-                       placeholder="আপনার ফোন নম্বর লিখুন (যেমন: +880 1XXXXXXXXX)"
-                       pattern="^\+8801\d{9}$">
-                <span class="valid"></span>
-                <span class="invalid"></span>
-            </div>
-
-            <button type="submit">
-                <span class="loader" id="loader"></span>
-                লেখা পাঠানোর জন্য ক্লিক করুন
-            </button>
-        </form>
-
-        <div class="success-message" id="successMessage">
-            🎉 আপনার লেখা সফলভাবে পাঠানো হয়েছে!
+    <div class="player-container" id="playerContainer">
+        <div id="player"></div>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
         </div>
-
-        <div class="error-message" id="errorMessage">
-            ❌ Error submitting blog. Please try again.
+        <div class="player-controls">
+            <button class="control-btn" id="prevBtn">⏮</button>
+            <button class="control-btn" id="playPauseBtn">▶</button>
+            <button class="control-btn" id="nextBtn">⏭</button>
+            <input type="range" id="volumeSlider" min="0" max="100" value="50">
+            <span id="currentTime">0:00</span>
         </div>
     </div>
 
-    <script src="../js/try.js"></script>
+    <script>
+        let player;
+        let currentMediaIndex = 0;
+        let mediaItems = [];
+
+        // Load YouTube IFrame API
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // Fetch media items from Django API
+        async function fetchMediaItems() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/media/');
+                mediaItems = await response.json();
+                renderMediaCards();
+            } catch (error) {
+                console.error('Error fetching media:', error);
+            }
+        }
+
+        function renderMediaCards() {
+            const grid = document.getElementById('mediaGrid');
+            grid.innerHTML = mediaItems.map((item, index) => `
+                <div class="media-card" data-index="${index}">
+                    <img src="${item.thumbnail}" class="card-thumbnail" alt="${item.title}">
+                    <div class="card-content">
+                        <h3>${item.title}</h3>
+                        <p>${item.description}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.media-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    currentMediaIndex = parseInt(card.dataset.index);
+                    initializePlayer(mediaItems[currentMediaIndex]);
+                });
+            });
+        }
+
+        function initializePlayer(mediaItem) {
+            if (!player) {
+                player = new YT.Player('player', {
+                    height: '0',
+                    width: '0',
+                    videoId: extractVideoId(mediaItem.youtube_url),
+                    events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
+            } else {
+                player.loadVideoById(extractVideoId(mediaItem.youtube_url));
+            }
+
+            document.getElementById('playerContainer').style.display = 'block';
+        }
+
+        function extractVideoId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function onPlayerReady(event) {
+            event.target.playVideo();
+            updateProgressBar();
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                playNext();
+            }
+        }
+
+        function updateProgressBar() {
+            if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+                const duration = player.getDuration();
+                const currentTime = player.getCurrentTime();
+                const percent = (currentTime / duration) * 100;
+                document.getElementById('progress').style.width = `${percent}%`;
+                document.getElementById('currentTime').textContent = 
+                    formatTime(currentTime);
+                requestAnimationFrame(updateProgressBar);
+            }
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            seconds = Math.floor(seconds % 60);
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Control functions
+        document.getElementById('playPauseBtn').addEventListener('click', () => {
+            if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', playNext);
+        document.getElementById('prevBtn').addEventListener('click', playPrevious);
+
+        document.getElementById('volumeSlider').addEventListener('input', (e) => {
+            player.setVolume(e.target.value);
+        });
+
+        function playNext() {
+            currentMediaIndex = (currentMediaIndex + 1) % mediaItems.length;
+            initializePlayer(mediaItems[currentMediaIndex]);
+        }
+
+        function playPrevious() {
+            currentMediaIndex = (currentMediaIndex - 1 + mediaItems.length) % mediaItems.length;
+            initializePlayer(mediaItems[currentMediaIndex]);
+        }
+
+        // Initialize
+        fetchMediaItems();
+    </script>
 </body>
 </html>
