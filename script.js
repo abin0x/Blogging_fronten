@@ -37,3 +37,7 @@ document.getElementById("search-btn").addEventListener("click", function () {
         resultsContainer.innerHTML = "<p>No results found.</p>";
     }
 });
+
+
+
+
