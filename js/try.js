@@ -1,96 +1,71 @@
-const form = document.getElementById('blogForm');
-        const successMessage = document.getElementById('successMessage');
-        const errorMessage = document.getElementById('errorMessage');
-        const loader = document.getElementById('loader');
-        const apiUrl = 'http://127.0.0.1:8000/api/submissions/';
+document.addEventListener("DOMContentLoaded", () => {
+    fetch('http://127.0.0.1:8000/api/media/')
+        .then(response => response.json())
+        .then(data => {
+            displayMediaCards(data);
+        })
+        .catch(error => console.error("Error fetching media:", error));
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            loader.style.display = 'block';
-            e.submitter.disabled = true;
+    function displayMediaCards(mediaData) {
+        const container = document.getElementById("media-cards-container");
 
-            const formData = {
-                title: form.title.value,
-                content: form.content.value,
-                name: form.name.value,
-                phone_number: form.phone_number.value
-            };
+        mediaData.forEach(media => {
+            const card = document.createElement("div");
+            card.classList.add("media-card");
 
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(formData)
-                });
+            card.innerHTML = `
+                <img src="${media.thumbnail}" alt="${media.title}">
+                <p>${media.title}</p>
+            `;
 
-                if (!response.ok) throw new Error('Submission failed');
+            card.addEventListener("click", () => {
+                fetchPlaylistVideos(media.playlist_id);
+            });
 
-                // Success handling
-                successMessage.style.display = 'block';
-                errorMessage.style.display = 'none';
-                form.reset();
-                successMessage.scrollIntoView({ behavior: 'smooth' });
-                
-                // Add confetti effect
-                createConfetti();
+            container.appendChild(card);
+        });
+    }
 
-            } catch (error) {
-                console.error('Error:', error);
-                errorMessage.style.display = 'block';
-                successMessage.style.display = 'none';
-                errorMessage.scrollIntoView({ behavior: 'smooth' });
-            } finally {
-                loader.style.display = 'none';
-                e.submitter.disabled = false;
-            }
+    function fetchPlaylistVideos(playlistId) {
+        fetch(`http://127.0.0.1:8000/api/media/${playlistId}/`)
+            .then(response => response.json())
+            .then(data => {
+                showModal(data);
+            })
+            .catch(error => console.error("Error fetching playlist videos:", error));
+    }
+
+    function showModal(media) {
+        const modal = document.getElementById("video-modal");
+        const playlistTitle = document.getElementById("playlist-title");
+        const playlistVideosContainer = document.getElementById("playlist-videos");
+
+        playlistTitle.textContent = media.title;
+        playlistVideosContainer.innerHTML = '';
+
+        media.videos.forEach(video => {
+            const videoDiv = document.createElement("div");
+            videoDiv.innerHTML = `
+                <img src="${video.thumbnail}" alt="${video.title}">
+                <p>${video.title}</p>
+            `;
+            videoDiv.addEventListener("click", () => playVideo(video));
+            playlistVideosContainer.appendChild(videoDiv);
         });
 
-        // Phone number validation with animation
-        const phoneInput = document.getElementById('phone_number');
-        phoneInput.addEventListener('input', (e) => {
-            const pattern = /^\+8801\d{9}$/;
-            if (!pattern.test(e.target.value)) {
-                e.target.classList.add('invalid');
-                e.target.classList.remove('valid');
-                e.target.setCustomValidity('Please enter a valid Bangladeshi phone number (+8801XXXXXXXXX)');
-            } else {
-                e.target.classList.add('valid');
-                e.target.classList.remove('invalid');
-                e.target.setCustomValidity('');
-            }
-        });
+        modal.style.display = "flex";
+    }
 
-        // Simple confetti effect
-        function createConfetti() {
-            const colors = ['#3498db', '#2ecc71', '#e74c3c', '#f1c40f'];
-            for(let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.style.position = 'fixed';
-                confetti.style.width = '8px';
-                confetti.style.height = '8px';
-                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.borderRadius = '50%';
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.top = '-10px';
-                confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear`;
-                document.body.appendChild(confetti);
+    function playVideo(video) {
+        const audioPlayer = document.getElementById("audio-player");
+        const audioSource = document.getElementById("audio-source");
 
-                setTimeout(() => confetti.remove(), 3000);
-            }
-        }
+        audioSource.src = video.url; // YouTube video URL
+        audioPlayer.load();
+        audioPlayer.play();
+    }
 
-        // Add fall animation for confetti
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fall {
-                to {
-                    transform: translateY(100vh) rotate(360deg);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
+    document.getElementById("close-modal").addEventListener("click", () => {
+        document.getElementById("video-modal").style.display = "none";
+    });
+});
