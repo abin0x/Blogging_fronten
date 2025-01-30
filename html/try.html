@@ -81,6 +81,77 @@
             height: 0;
             overflow: hidden;
         }
+
+        .audio-controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            padding: 15px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .progress-container {
+            flex-grow: 1;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 5px;
+            background: #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress {
+            height: 100%;
+            background: #28a745;
+            border-radius: 3px;
+            width: 0;
+        }
+
+        .time-display {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button.control-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        button.control-btn:hover {
+            background: #f0f0f0;
+        }
+
+        button.control-btn img {
+            width: 24px;
+            height: 24px;
+        }
     </style>
 </head>
 <body>
@@ -98,9 +169,35 @@
         <div id="audioContainer"></div>
     </div>
 
+    <!-- Audio Controls -->
+    <div class="audio-controls" id="audioControls">
+        <div class="control-group">
+            <button class="control-btn" id="playPauseBtn">
+                <img src="https://img.icons8.com/ios-filled/50/000000/play--v1.png" alt="Play" id="playPauseIcon">
+            </button>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="time-display">
+                    <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+                </div>
+            </div>
+            <div class="volume-container">
+                <button class="control-btn" id="muteBtn">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/medium-volume.png" alt="Volume" id="volumeIcon">
+                </button>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE = 'http://127.0.0.1:8000/api/media';
         let player = null;
+        let isPlaying = false;
+        let isMuted = false;
+        let updateInterval;
 
         // YouTube Video ID extractor
         function extractVideoId(url) {
@@ -115,14 +212,77 @@
                 height: '0',
                 width: '0',
                 events: {
-                    'onReady': onPlayerReady
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
                 }
             });
         }
 
         function onPlayerReady(event) {
-            // Optional: Auto-play when player is ready
+            document.getElementById('audioControls').style.display = 'flex';
+            updatePlayerControls();
         }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+                isPlaying = true;
+                updateInterval = setInterval(updateProgress, 1000);
+            } else {
+                isPlaying = false;
+                clearInterval(updateInterval);
+            }
+            updatePlayerControls();
+        }
+
+        function updateProgress() {
+            const currentTime = player.getCurrentTime();
+            const duration = player.getDuration();
+            const progress = (currentTime / duration) * 100;
+
+            document.getElementById('progress').style.width = `${progress}%`;
+            document.getElementById('currentTime').textContent = formatTime(currentTime);
+            document.getElementById('duration').textContent = formatTime(duration);
+        }
+
+        function formatTime(time) {
+            const minutes = Math.floor(time / 60);
+            const seconds = Math.floor(time % 60);
+            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function updatePlayerControls() {
+            const playPauseIcon = document.getElementById('playPauseIcon');
+            playPauseIcon.src = isPlaying ? 'https://img.icons8.com/ios-filled/50/000000/pause--v1.png' : 'https://img.icons8.com/ios-filled/50/000000/play--v1.png';
+        }
+
+        document.getElementById('playPauseBtn').addEventListener('click', () => {
+            if (isPlaying) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+        });
+
+        document.getElementById('muteBtn').addEventListener('click', () => {
+            isMuted = !isMuted;
+            player.setVolume(isMuted ? 0 : 100);
+            document.getElementById('volumeIcon').src = isMuted ? 'https://img.icons8.com/ios-filled/50/000000/no-audio.png' : 'https://img.icons8.com/ios-filled/50/000000/medium-volume.png';
+        });
+
+        document.getElementById('volumeSlider').addEventListener('input', (e) => {
+            const volume = e.target.value;
+            player.setVolume(volume * 100);
+            isMuted = volume === 0;
+            document.getElementById('volumeIcon').src = isMuted ? 'https://img.icons8.com/ios-filled/50/000000/no-audio.png' : 'https://img.icons8.com/ios-filled/50/000000/medium-volume.png';
+        });
+
+        document.getElementById('progressBar').addEventListener('click', (e) => {
+            const rect = e.target.getBoundingClientRect();
+            const offsetX = e.clientX - rect.left;
+            const width = rect.width;
+            const seekTime = (offsetX / width) * player.getDuration();
+            player.seekTo(seekTime, true);
+        });
 
         // Play Audio Function
         function playAudio(url) {
@@ -138,7 +298,8 @@
                     width: '0',
                     videoId: videoId,
                     events: {
-                        'onReady': (event) => event.target.playVideo()
+                        'onReady': (event) => event.target.playVideo(),
+                        'onStateChange': onPlayerStateChange
                     },
                     playerVars: {
                         autoplay: 1,
