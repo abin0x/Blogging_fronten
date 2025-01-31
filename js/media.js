@@ -6,12 +6,14 @@ const API_BASE = 'http://127.0.0.1:8000/api/media';
         let currentVideoIndex = 0;
         let videoList = [];
 
+        // Extract YouTube video ID from URL
         function extractVideoId(url) {
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
             const match = url.match(regExp);
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
+        // Load the YouTube player
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('audioContainer', {
                 height: '0',
@@ -24,20 +26,26 @@ const API_BASE = 'http://127.0.0.1:8000/api/media';
         }
 
         function onPlayerReady(event) {
-            // No action needed here
+            // Check if there's a video to play from localStorage
+            const savedVideoId = localStorage.getItem('currentVideoId');
+            const savedPlayingState = localStorage.getItem('isPlaying');
+
+            if (savedVideoId && savedPlayingState === 'true') {
+                playAudio(savedVideoId);
+            }
         }
 
         function onPlayerStateChange(event) {
             if (event.data === YT.PlayerState.PLAYING) {
                 isPlaying = true;
-                document.getElementById('audioControls').style.display = 'flex'; // Show controls
                 updateInterval = setInterval(updateProgress, 1000);
+                localStorage.setItem('isPlaying', 'true'); // Save playing state
             } else if (event.data === YT.PlayerState.ENDED) {
                 playNextVideo(); // Automatically play next video
             } else {
                 isPlaying = false;
                 clearInterval(updateInterval);
-                document.getElementById('audioControls').style.display = 'none'; // Hide controls
+                localStorage.setItem('isPlaying', 'false'); // Save playing state
             }
             updatePlayerControls();
         }
@@ -74,7 +82,7 @@ const API_BASE = 'http://127.0.0.1:8000/api/media';
         document.getElementById('muteBtn').addEventListener('click', () => {
             isMuted = !isMuted;
             player.setVolume(isMuted ? 0 : 100);
-            document.getElementById('volumeIcon').src = isMuted ? 'https://img.icons8.com/ios-filled/50/000000/no-audio.png' : 'https://img .icons8.com/ios-filled/50/000000/medium-volume.png';
+            document.getElementById('volumeIcon').src = isMuted ? 'https://img.icons8.com/ios-filled/50/000000/no-audio.png' : 'https://img.icons8.com/ios-filled/50/000000/medium-volume.png';
         });
 
         document.getElementById('volumeSlider').addEventListener('input', (e) => {
@@ -117,6 +125,8 @@ const API_BASE = 'http://127.0.0.1:8000/api/media';
             if (player) {
                 player.loadVideoById(videoId);
                 player.playVideo();
+                localStorage.setItem('currentVideoId', videoId); // Save current video ID
+                document.getElementById('audioControls').style.display = 'flex'; // Show controls when audio is played
             } else {
                 player = new YT.Player('audioContainer', {
                     height: '0',
@@ -133,6 +143,8 @@ const API_BASE = 'http://127.0.0.1:8000/api/media';
                         rel: 0
                     }
                 });
+                localStorage.setItem('currentVideoId', videoId); // Save current video ID
+                document.getElementById('audioControls').style.display = 'flex'; // Show controls when audio is played
             }
         }
 
@@ -185,11 +197,8 @@ const API_BASE = 'http://127.0.0.1:8000/api/media';
         function showPlaylists() {
             document.getElementById('playlistContainer').style.display = 'grid';
             document.getElementById('videoContainer').style.display = 'none';
-            if (player) {
-                player.stopVideo();
-                player.destroy();
-                player = null;
-            }
+            // Do not destroy the player, keep it alive
         }
 
+        // Fetch playlists on page load
         fetchPlaylists();
