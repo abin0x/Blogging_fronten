@@ -1,29 +1,23 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>বাংলাদেশের জেলার নামাজের সময়</title>
-    <link rel="stylesheet" href="../css/try.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>বাংলাদেশের নামাজের সময়</title>
+  <link rel="stylesheet" href="../css/try.css">
 </head>
 <body>
-    <div class="container">
-        <h1>বাংলাদেশের জেলার নামাজের সময়</h1>
-        <label for="district">জেলা নির্বাচন করুন:</label>
-        <select id="district">
-            <option value="Dhaka">ঢাকা</option>
-            <option value="Chittagong">চট্টগ্রাম</option>
-            <option value="Khulna">খুলনা</option>
-            <option value="Rajshahi">রাজশাহী</option>
-            <option value="Sylhet">সিলেট</option>
-            <option value="Barisal">বরিশাল</option>
-            <option value="Rangpur">রংপুর</option>
-            <option value="Mymensingh">ময়মনসিংহ</option>
-        </select>
-        <div id="namaz-times">
-            <!-- Namaz times will be displayed here -->
-        </div>
+  <div class="container">
+    <h1>নামাজের সময়</h1>
+    <label for="district">জেলা নির্বাচন করুন:</label>
+    <select id="district">
+      <option value="">নির্বাচন করুন</option>
+    </select>
+    <div id="prayer-times" class="prayer-times">
+      <!-- Prayer times will be shown here -->
     </div>
-    <script src="../js/try.js"></script>
+  </div>
+
+  <script src="../js/try.js"></script>
 </body>
 </html>
