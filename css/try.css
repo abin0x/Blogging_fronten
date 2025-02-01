@@ -1,183 +1,44 @@
-/* Base Styles */
-* {
-  box-sizing: border-box;
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
   margin: 0;
   padding: 0;
-  font-family: 'Noto Sans Bengali', 'Poppins', sans-serif;
-}
-
-
-/* Container */
-.container {
-  width: 100%;
-  max-width: 1200px; /* Increased width */
-  margin: 0 auto;
-}
-
-/* Header Section */
-.headers {
-  text-align: center;
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: #3b82f6;
-  border-radius: 1rem;
-  color: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.header h1 {
-  font-size: 2.2rem;
-  margin-bottom: 0.5rem;
-  font-weight: 700;
-}
-
-#today-date {
-  font-size: 1.2rem;
-  font-weight: 500;
-}
-
-/* Controls Section */
-.controls {
   display: flex;
-  gap: 1rem;
   justify-content: center;
-  margin-bottom: 2rem;
-  padding: 1rem;
-  background: #ffffff;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+label {
+  font-size: 16px;
+  margin-bottom: 10px;
+  display: block;
 }
 
 select {
-  padding: 0.6rem 1.2rem;
-  border: 2px solid #cbd5e1;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  background: white;
-  color: #1e293b;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  outline: none;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
 }
 
-select:hover {
-  border-color: #94a3b8;
-  transform: translateY(-1px);
-}
-
-select:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-}
-
-button {
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  background: #3b82f6;
-  color: white;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-button:hover {
-  background: #2563eb;
-  transform: translateY(-1px);
-}
-
-/* Calendar Grid */
-#calendar {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  border: 2px solid #cbd5e1; /* Added border */
-  border-radius: 1rem;
-  padding: 1rem;
-  background: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Calendar Cells */
-#calendar > div {
-  aspect-ratio: 2;
-  padding: 0.8rem;
-  background: #f1f5f9;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.5rem;
-  transition: all 0.2s ease;
-  position: relative;
-  cursor: pointer;
-}
-
-#calendar > div:hover {
-  background: #e2e8f0;
-  transform: translateY(-2px);
-}
-
-/* Weekday Headers */
-#calendar > div:first-child {
-  background: transparent;
-  font-weight: 600;
-  color: #475569;
-  font-size: 1.1rem;
-  cursor: default;
-}
-
-/* Date Styling */
-.hijri-date {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1e40af;
-  margin-bottom: 0.25rem;
-}
-
-.english-date {
-  font-size: 0.9rem;
-  color: #64748b;
-  font-weight: 500;
-}
-
-/* Current Day Highlight */
-.current-day {
-  background: #3b82f6 !important;
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
-}
-
-.current-day .hijri-date,
-.current-day .english-date {
-  color: white;
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 640px) {
-  body {
-      padding: 1rem;
-  }
-
-  .header h1 {
-      font-size: 1.8rem;
-  }
-
-  .controls {
-      flex-direction: column;
-      align-items: center;
-  }
-
-  #calendar > div {
-      padding: 0.5rem;
-      font-size: 0.9rem;
-  }
-
-  .hijri-date {
-      font-size: 1rem;
-  }
-
-  .english-date {
-      font-size: 0.8rem;
-  }
+#namaz-times {
+  font-size: 18px;
+  text-align: left;
 }

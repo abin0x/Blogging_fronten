@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Blog Post</title>
-    <link rel="stylesheet" href="../css/user_blog_submission.css">
+    <title>ইসলামিক ক্যালেন্ডার</title>
+    <link rel="stylesheet" href="../css/calendar.css">
     <link rel="stylesheet" href="../css/nabvar.css">
     <link rel="stylesheet" href="../css/footer.css">
 </head>
 <body>
+
     <header class="header">
         <nav class="navbar">
             <div class="logo">
@@ -24,7 +25,7 @@
                 <li><a href="#contact">বিয়ে</a></li>
                 <li><a href="#contact">কবর</a></li>
                 <li><a href="../html/calendar.html">ক্যালেন্ডার</a></li>
-                <li><a href="./html/try.html">লেখালিখি</a></li>
+                <li><a href="../html/user_blog_submission.html">লেখালিখি</a></li>
                 <li><a href="../html/category.html">ক্যাটাগরিসমূহ</a></li>
             </ul>
             <div class="search-box">
@@ -33,52 +34,27 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
-        <h1>আপনার লেখাটি শেয়ার করুন ✍️</h1>
-        
-        <form id="blogForm">
-            <div class="form-group">
-                <label for="title">টাইটেল : </label>
-                <input type="text" id="title" name="title" required placeholder="আপনার লেখার শিরোনাম দিন....">
-            </div>
-
-            <div class="form-group">
-                <label for="content">বিস্তারিত : </label>
-                <textarea id="content" name="content" required placeholder="আপনার লেখা বিস্তারিতভাবে উপস্থাপন করুন...."></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="name">লেখকের নাম : </label>
-                <input type="text" id="name" name="name" required placeholder="এখানে লেখকের পূর্ণ নাম দিন....">
-            </div>
-
-            <div class="form-group">
-                <label for="phone">ফোন নাম্বার : </label>
-                <input type="tel" id="phone_number" name="phone_number" required 
-                       placeholder="আপনার ফোন নম্বর লিখুন (যেমন: +880 1XXXXXXXXX)"
-                       pattern="^\+8801\d{9}$">
-                <span class="valid"></span>
-                <span class="invalid"></span>
-            </div>
-
-            <button type="submit">
-                <span class="loader" id="loader"></span>
-                লেখা পাঠানোর জন্য ক্লিক করুন
-            </button>
-        </form>
-
-        <div class="success-message" id="successMessage">
-            🎉 আপনার লেখা সফলভাবে পাঠানো হয়েছে!
-        </div>
-
-        <div class="error-message" id="errorMessage">
-            ❌ Error submitting blog. Please try again.
-        </div>
-    </div>
-
-    <!-- Footer section here  -->
+        <!-- Header -->
+        <header class="headers">
+          <h1>ইসলামিক ক্যালেন্ডার 🗓️</h1>
+          <p id="today-date" class="today-date"></p>
+        </header>
     
-    <footer class="footer">
+        <!-- Controls -->
+        <div class="controls">
+          <select id="year-select"></select>
+          <select id="month-select"></select>
+          <button onclick="loadCalendar()">Load Calendar</button>
+        </div>
+    
+        <!-- Calendar -->
+        <div id="calendar" class="calendar"></div>
+      </div>
+
+
+      <footer class="footer">
         <div class="footer-content">
             <div class="footer-section about">
                 <h2>আমাদের সম্পর্কে</h2>
@@ -115,7 +91,6 @@
         </div>
     </footer>
 
-
-    <script src="../js/user_blog_submission.js"></script>
+    <script src="../js/calendar.js"></script>
 </body>
 </html>

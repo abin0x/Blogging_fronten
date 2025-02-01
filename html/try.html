@@ -3,55 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ইসলামিক ক্যালেন্ডার</title>
+    <title>বাংলাদেশের জেলার নামাজের সময়</title>
     <link rel="stylesheet" href="../css/try.css">
-    <link rel="stylesheet" href="../css/nabvar.css">
 </head>
 <body>
-
-    <header class="header">
-        <nav class="navbar">
-            <div class="logo">
-                <a href="index.html">
-                    <img src="../images/logoo.png" alt="Media Logo" class="logo-image">
-                </a>
-            </div>
-            <ul class="nav-links">
-                <li><a href="./index.html">মূলপাতা</a></li>
-                <li><a href="./html/media.html">মিডিয়া</a></li>
-                <li><a href="#blogs">দেয়াল চিত্র</a></li>
-                <li><a href="#contact">ইতিহাস</a></li>
-                <li><a href="#contact">বিয়ে</a></li>
-                <li><a href="#contact">কবর</a></li>
-                <li><a href="#contact">জীবন</a></li>
-                <li><a href="./html/user_blog_submission.html">লেখালিখি</a></li>
-                <li><a href="./html/category.html">ক্যাটাগরিসমূহ</a></li>
-            </ul>
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="Search...">
-                <button id="search-btn">Search</button>
-            </div>
-        </nav>
-    </header>
-
     <div class="container">
-        <!-- Header -->
-        <header class="headers">
-          <h1>ইসলামিক ক্যালেন্ডার 🗓️</h1>
-          <p id="today-date" class="today-date"></p>
-        </header>
-    
-        <!-- Controls -->
-        <div class="controls">
-          <select id="year-select"></select>
-          <select id="month-select"></select>
-          <button onclick="loadCalendar()">Load Calendar</button>
+        <h1>বাংলাদেশের জেলার নামাজের সময়</h1>
+        <label for="district">জেলা নির্বাচন করুন:</label>
+        <select id="district">
+            <option value="Dhaka">ঢাকা</option>
+            <option value="Chittagong">চট্টগ্রাম</option>
+            <option value="Khulna">খুলনা</option>
+            <option value="Rajshahi">রাজশাহী</option>
+            <option value="Sylhet">সিলেট</option>
+            <option value="Barisal">বরিশাল</option>
+            <option value="Rangpur">রংপুর</option>
+            <option value="Mymensingh">ময়মনসিংহ</option>
+        </select>
+        <div id="namaz-times">
+            <!-- Namaz times will be displayed here -->
         </div>
-    
-        <!-- Calendar -->
-        <div id="calendar" class="calendar"></div>
-      </div>
-
+    </div>
     <script src="../js/try.js"></script>
 </body>
 </html>
