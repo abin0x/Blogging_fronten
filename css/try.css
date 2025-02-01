@@ -1,118 +1,191 @@
-/* General Styles */
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #1e1e2f; /* Dark background */
-  color: #e0e0e0; /* Light text */
+/* Base Styles */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: 'Noto Sans Bengali', 'Poppins', sans-serif;
+}
+
+body {
+  background: #f8fafc;
+  min-height: 100vh;
+  padding: 2rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
 }
 
+/* Container */
 .container {
-  background: #2a2a40; /* Dark container */
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  padding: 20px;
-  width: 90%;
-  max-width: 800px;
+  width: 100%;
+  max-width: 1200px; /* Increased width */
+  margin: 0 auto;
+}
+
+/* Header Section */
+.header {
   text-align: center;
-  animation: fadeIn 1s ease-in-out;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #3b82f6;
+  border-radius: 1rem;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-  color: #ffffff;
-  animation: slideIn 1s ease-in-out;
+.header h1 {
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
 }
 
+#today-date {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* Controls Section */
 .controls {
-  margin-bottom: 20px;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 select {
-  padding: 10px;
+  padding: 0.6rem 1.2rem;
+  border: 2px solid #cbd5e1;
+  border-radius: 0.5rem;
   font-size: 1rem;
-  border: 2px solid #6c5ce7; /* Purple border */
-  border-radius: 5px;
-  margin: 0 10px;
-  background: #3e3e5e; /* Dark select background */
-  color: #e0e0e0; /* Light text */
+  background: white;
+  color: #1e293b;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  outline: none;
 }
 
 select:hover {
-  background: #6c5ce7; /* Purple hover */
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
+select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  background: #3b82f6;
   color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.today-date {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #ff7675; /* Red for today's date */
-  margin-bottom: 20px;
-  animation: fadeIn 1.5s ease-in-out;
+button:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
 }
 
-.calendar {
+/* Calendar Grid */
+#calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-  animation: slideIn 1s ease-in-out;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border: 2px solid #cbd5e1; /* Added border */
+  border-radius: 1rem;
+  padding: 1rem;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.calendar div {
-  background: #3e3e5e; /* Dark calendar day background */
-  padding: 15px;
-  border-radius: 10px;
-  text-align: center;
+/* Calendar Cells */
+#calendar > div {
+  aspect-ratio: 2;
+  padding: 0.8rem;
+  background: #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+#calendar > div:hover {
+  background: #e2e8f0;
+  transform: translateY(-2px);
+}
+
+/* Weekday Headers */
+#calendar > div:first-child {
+  background: transparent;
+  font-weight: 600;
+  color: #475569;
   font-size: 1.1rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
 }
 
-.calendar div:hover {
-  transform: scale(1.1);
-  box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3); /* Purple shadow */
-}
-
-.calendar div.current-day {
-  background: #d0ff00; /* Purple for current day */
-  color: white;
-  font-weight: bold;
-}
-
+/* Date Styling */
 .hijri-date {
-  font-size: 1.2rem;
-  color: #fdcb6e; /* Yellow for Hijri date */
-  font-weight: bold;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e40af;
+  margin-bottom: 0.25rem;
 }
 
 .english-date {
   font-size: 0.9rem;
-  color: #b2bec3; /* Gray for English date */
+  color: #64748b;
+  font-weight: 500;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from {
-      opacity: 0;
-  }
-  to {
-      opacity: 1;
-  }
+/* Current Day Highlight */
+.current-day {
+  background: #3b82f6 !important;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
 }
 
-@keyframes slideIn {
-  from {
-      transform: translateY(-20px);
-      opacity: 0;
+.current-day .hijri-date,
+.current-day .english-date {
+  color: white;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+  body {
+      padding: 1rem;
   }
-  to {
-      transform: translateY(0);
-      opacity: 1;
+
+  .header h1 {
+      font-size: 1.8rem;
+  }
+
+  .controls {
+      flex-direction: column;
+      align-items: center;
+  }
+
+  #calendar > div {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+  }
+
+  .hijri-date {
+      font-size: 1rem;
+  }
+
+  .english-date {
+      font-size: 0.8rem;
   }
 }

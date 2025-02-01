@@ -9,14 +9,22 @@
 <body>
 
     <div class="container">
-        <h1>ইসলামিক ক্যালেন্ডার 📅</h1>
+        <!-- Header -->
+        <header class="header">
+          <h1>ইসলামিক ক্যালেন্ডার 🗓️</h1>
+          <p id="today-date" class="today-date"></p>
+        </header>
+    
+        <!-- Controls -->
         <div class="controls">
-            <select id="year-select" onchange="loadCalendar()"></select>
-            <select id="month-select" onchange="loadCalendar()"></select>
+          <select id="year-select"></select>
+          <select id="month-select"></select>
+          <button onclick="loadCalendar()">Load Calendar</button>
         </div>
-        <div id="today-date" class="today-date">আজকের ইসলামিক তারিখ: লোড হচ্ছে...</div>
+    
+        <!-- Calendar -->
         <div id="calendar" class="calendar"></div>
-    </div>
+      </div>
 
     <script src="../js/try.js"></script>
 </body>
