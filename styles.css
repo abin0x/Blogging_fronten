@@ -191,25 +191,60 @@ body {
     transition: background-color 0.3s;
    
 } */
+/* General Button Styles */
+/* General Button Styles */
 .view-all {
-    position: absolute; /* Use absolute positioning */
-    top: 23%; /* Center vertically relative to parent */
-    right: 50px; /* Position the button 20px from the right */
-    transform: translateY(-50%); /* Adjust to vertically align properly */
-    padding: 8px 10px;
-    background-color: #007BFF;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s;
+    background-color: #007BFF; /* Green background */
+    color: white; /* White text */
+    font-size: 16px; /* Font size */
+    padding: 8px 16px; /* Padding inside the button */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth background color transition */
+    display: inline-block; /* Align button to content */
+    text-align: center; /* Center the text */
+    margin-top: -20px; 
+    /* margin-bottom: 100px; */
 }
 
-
-
+/* Hover Effect */
 .view-all:hover {
-    background-color: #0056b3;
+    background-color: #00A59A; /* Darker green on hover */
+}
+
+/* Position the button at the top-right corner for larger devices (laptops) */
+#media-albums {
+    position: relative; /* Ensure the parent container can use absolute positioning */
+}
+
+.view-all {
+    position: absolute;
+    top: 20px; /* Distance from the top */
+    right: 20px; /* Distance from the right */
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .view-all {
+        font-size: 14px; /* Smaller font size on mobile */
+        padding: 8px 16px; /* Smaller padding */
+        width: auto; /* Remove full width */
+        margin-top: 10px; /* Smaller margin */
+        position: static; /* Reset the absolute positioning */
+        display: block; /* Make it a block-level element */
+        margin-left: auto; /* Align to the center horizontally */
+        margin-right: auto; /* Align to the center horizontally */
+        margin-top: 30px; /* Position it a bit lower */
+    }
+}
+
+/* Further adjustments for very small screens (Portrait mode on mobile devices) */
+@media (max-width: 480px) {
+    .view-all {
+        font-size: 12px; /* Further reduce font size */
+        padding: 6px 12px; /* Smaller padding */
+    }
 }
 
 /* Blogs Section */

@@ -1,108 +1,33 @@
-// // Function to convert custom date format to a valid date object
-// function parseCustomDate(dateString) {
-//     const dateMatch = dateString.match(/^(\d{1,2}) (\w+), (\d{4}) - (\d{1,2}):(\d{2})(AM|PM)$/);
-    
-//     if (!dateMatch) return new Date(dateString); // If format doesn't match, return original string
+// Function to convert custom date format to a valid date object
+function parseCustomDate(dateString) {
+    const dateMatch = dateString.match(/^(\d{1,2}) (\w+), (\d{4}) - (\d{1,2}):(\d{2})(AM|PM)$/);
 
-//     const [_, day, month, year, hour, minute, period] = dateMatch;
+    if (!dateMatch) return new Date(dateString); // If format doesn't match, return original string
 
-//     const months = {
-//         "January": 0,
-//         "February": 1,
-//         "March": 2,
-//         "April": 3,
-//         "May": 4,
-//         "June": 5,
-//         "July": 6,
-//         "August": 7,
-//         "September": 8,
-//         "October": 9,
-//         "November": 10,
-//         "December": 11
-//     };
+    const [_, day, month, year, hour, minute, period] = dateMatch;
 
-//     const monthIndex = months[month];
-//     const hour24 = period === "PM" ? (parseInt(hour) % 12) + 12 : parseInt(hour) % 12;
+    const months = {
+        "January": 0,
+        "February": 1,
+        "March": 2,
+        "April": 3,
+        "May": 4,
+        "June": 5,
+        "July": 6,
+        "August": 7,
+        "September": 8,
+        "October": 9,
+        "November": 10,
+        "December": 11
+    };
 
-//     return new Date(year, monthIndex, day, hour24, minute);
-// }
+    const monthIndex = months[month];
+    const hour24 = period === "PM" ? (parseInt(hour) % 12) + 12 : parseInt(hour) % 12;
 
-// // Function to fetch blogs and display them in the HTML
-// async function fetchBlogs() {
-//     const apiUrl = "http://127.0.0.1:8000/api/blogs/"; 
-//     const blogsContainer = document.getElementById("blogs-container");
+    return new Date(year, monthIndex, day, hour24, minute);
+}
 
-//     try {
-//         const response = await fetch(apiUrl);
-//         if (!response.ok) {
-//             throw new Error(`HTTP error! Status: ${response.status}`);
-//         }
-
-//         const blogs = await response.json();
-
-//         blogsContainer.innerHTML = "";
-
-//         blogs.forEach((blog) => {
-//             const blogCard = document.createElement("div");
-//             blogCard.classList.add("blog-card");
-
-//             const imageUrl = blog.featured_image || "https://via.placeholder.com/150"; 
-
-//             const createdAt = parseCustomDate(blog.created_at);
-//             const formattedDate = isNaN(createdAt) ? "Invalid Date" : createdAt.toLocaleDateString('bn-BD', {
-//                 day: '2-digit',
-//                 month: 'long',
-//                 year: 'numeric'
-//             });
-
-//             blogCard.innerHTML = `
-//                 <h3>${blog.title}</h3>
-//                 <img src="${imageUrl}" alt="Blog Image">
-//                 <div class="blog-author">By ${blog.author}</div>
-//                 <p>${blog.content.slice(0, 100)}...</p>
-//                 <div class="blog-meta">
-//                     <span>${formattedDate}</span>
-//                     <span>${blog.reading_time} Min Read</span>
-//                     <span>${blog.views_count || 0} Views</span>
-//                 </div>
-//                 <div class="reactions-button-row">
-//                     <button class="read-more" data-id="${blog.id}">Read More</button>
-//                     <div class="reactions">
-//                         <div class="reaction">
-//                             <i class="fas fa-thumbs-up"></i> ${blog.good_reactions_count || 0}
-//                         </div>
-//                         <div class="reaction">
-//                             <i class="fas fa-thumbs-down"></i> ${blog.bad_reactions_count || 0}
-//                         </div>
-//                     </div>
-//                 </div>
-//             `;
-
-//             blogsContainer.appendChild(blogCard);
-//         });
-
-//         document.querySelectorAll(".read-more").forEach((button) => {
-//             button.addEventListener("click", () => {
-//                 const blogId = button.getAttribute("data-id");
-//                 window.location.href = `/blog-details.html?id=${blogId}`;
-//             });
-//         });
-
-//     } catch (error) {
-//         console.error("Error fetching blogs:", error);
-
-//         blogsContainer.innerHTML = `
-//             <p class="error-message">Failed to load blogs. Please try again later.</p>
-//         `;
-//     }
-// }
-
-// document.addEventListener("DOMContentLoaded", fetchBlogs);
-
-
-// // dsljkfd
-// // asadm 
-
+// Function to fetch blogs with pagination
 async function fetchBlogs(page = 1) {
     const blogsPerPage = 9;  // Number of blogs per page
     const apiUrl = `http://127.0.0.1:8000/api/blogs/?page=${page}&page_size=${blogsPerPage}`;
@@ -128,7 +53,7 @@ async function fetchBlogs(page = 1) {
             const blogCard = document.createElement("div");
             blogCard.classList.add("blog-card");
 
-            const imageUrl = blog.featured_image || "https://via.placeholder.com/150"; 
+            const imageUrl = blog.featured_image || "https://via.placeholder.com/150";
             const createdAt = parseCustomDate(blog.created_at);
             const formattedDate = isNaN(createdAt) ? "Invalid Date" : createdAt.toLocaleDateString('bn-BD', {
                 day: '2-digit',
@@ -170,47 +95,16 @@ async function fetchBlogs(page = 1) {
             button.addEventListener("click", () => {
                 const blogId = button.getAttribute("data-id");
                 window.location.href = `html/blog_details.html?id=${blogId}`;
-                // window.location.href = `html/try.html?id=${blogId}`;
             });
         });
 
     } catch (error) {
         console.error("Error fetching blogs:", error);
-
-        blogsContainer.innerHTML = `
-            <p class="error-message">Failed to load blogs. Please try again later.</p>
-        `;
+        blogsContainer.innerHTML = `<p class="error-message">Failed to load blogs. Please try again later.</p>`;
     }
 }
 
-function parseCustomDate(dateString) {
-    const dateMatch = dateString.match(/^(\d{1,2}) (\w+), (\d{4}) - (\d{1,2}):(\d{2})(AM|PM)$/);
-    
-    if (!dateMatch) return new Date(dateString); // If format doesn't match, return original string
-
-    const [_, day, month, year, hour, minute, period] = dateMatch;
-
-    const months = {
-        "January": 0,
-        "February": 1,
-        "March": 2,
-        "April": 3,
-        "May": 4,
-        "June": 5,
-        "July": 6,
-        "August": 7,
-        "September": 8,
-        "October": 9,
-        "November": 10,
-        "December": 11
-    };
-
-    const monthIndex = months[month];
-    const hour24 = period === "PM" ? (parseInt(hour) % 12) + 12 : parseInt(hour) % 12;
-
-    return new Date(year, monthIndex, day, hour24, minute);
-}
-
+// Function to render pagination
 function renderPagination(paginationContainer, totalPages, currentPage) {
     paginationContainer.innerHTML = "";
 
@@ -240,6 +134,7 @@ function renderPagination(paginationContainer, totalPages, currentPage) {
     paginationContainer.appendChild(nextButton);
 }
 
+// Function to determine dynamic page numbers
 function getDynamicPageNumbers(currentPage, totalPages) {
     let startPage, endPage;
 
@@ -263,6 +158,64 @@ function getDynamicPageNumbers(currentPage, totalPages) {
     return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
 }
 
+// Fetch the blogs when the page loads
 document.addEventListener("DOMContentLoaded", () => {
     fetchBlogs(); // Load first page by default
 });
+
+// Function to fetch media albums
+async function fetchMedia() {
+    const apiUrl = "http://127.0.0.1:8000/api/media/";
+    const albumsContainer = document.getElementById("albums-container");
+    const viewAllButton = document.getElementById("view-all-button");  // Button to view all media
+
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const mediaAlbums = await response.json();
+
+        // Clear existing content in the container
+        albumsContainer.innerHTML = "";
+
+        // Display only the first 4 albums initially
+        const limitedAlbums = mediaAlbums.slice(0, 4);
+
+        limitedAlbums.forEach((album) => {
+            const albumCard = document.createElement("div");
+            albumCard.classList.add("album-card");
+
+            const imageUrl = album.thumbnail || "https://via.placeholder.com/200"; // Default image if none
+            albumCard.innerHTML = `
+                <img src="${imageUrl}" alt="Album Image">
+                <p>${album.title}</p>
+            `;
+
+            // Add event listener to navigate to media page
+            albumCard.addEventListener("click", () => {
+                window.location.href = `html/media.html`;
+            });
+
+            albumsContainer.appendChild(albumCard);
+        });
+
+        // Show the "View All" button if there are more than 4 albums
+        if (mediaAlbums.length > 4) {
+            viewAllButton.style.display = "block";  // Make "View All" button visible
+            viewAllButton.addEventListener("click", () => {
+                window.location.href = "html/media.html";  // Redirect to media page to view all albums
+            });
+        } else {
+            viewAllButton.style.display = "none";  // Hide "View All" button if no more albums
+        }
+
+    } catch (error) {
+        console.error("Error fetching media albums:", error);
+        albumsContainer.innerHTML = `<p class="error-message">Failed to load media albums. Please try again later.</p>`;
+    }
+}
+
+// Fetch the media albums when the page loads
+document.addEventListener("DOMContentLoaded", fetchMedia);

@@ -120,8 +120,16 @@ const API_BASE = 'http://127.0.0.1:8000/api/media';
 
         function playAudio(url) {
             const videoId = extractVideoId(url);
-            if (!videoId) return alert('Invalid YouTube URL');
-
+            if (!videoId) {
+                // Show a user-friendly message instead of just alerting
+                document.getElementById('error-message').textContent = 'Please provide a valid YouTube URL.';
+                document.getElementById('error-message').style.display = 'block';
+                return;
+            }
+        
+            // Clear any previous error message
+            document.getElementById('error-message').style.display = 'none';
+        
             if (player) {
                 player.loadVideoById(videoId);
                 player.playVideo();
@@ -147,6 +155,7 @@ const API_BASE = 'http://127.0.0.1:8000/api/media';
                 document.getElementById('audioControls').style.display = 'flex'; // Show controls when audio is played
             }
         }
+        
 
         async function fetchPlaylists() {
             try {
