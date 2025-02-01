@@ -45,3 +45,20 @@ document.getElementById("search-btn").addEventListener("click", function () {
 // hello world 
 // hlfdfd jdfjjfd fjkdjf dfj jdjjj
 // my name is mahmudul hasan abin 
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set the current year in the footer
+    const currentYear = new Date().getFullYear();
+    document.getElementById('current-year').textContent = currentYear;
+
+    const footerLinks = document.querySelectorAll('.footer-section.links a');
+    footerLinks.forEach(link => {
+        link.addEventListener('mouseover', function() {
+            this.style.color = '#FFD700'; // Change to gold on hover
+        });
+        link.addEventListener('mouseout', function() {
+            this.style.color = '#ffffff'; // Change back to white
+        });
+    });
+});

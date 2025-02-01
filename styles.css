@@ -142,6 +142,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    cursor: pointer;
 }
 
 .album-card:hover {
@@ -462,4 +463,94 @@ body {
 #pagination-container button:first-child:hover,
 #pagination-container button:last-child:hover {
     background-color: #0056b3;
+}
+
+/* Footer  */
+
+.footer {
+    background-color: #003366; /* Deep blue background */
+    color: #ffffff; /* White text */
+    padding: 20px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 200px;
+    margin: 0px;
+}
+
+.footer-section h2 {
+    color: #FFD700; /* Gold color for headings */
+    border-bottom: 2px solid #FFD700; /* Underline for headings */
+    padding-bottom: 5px;
+}
+
+.footer-section p, .footer-section ul {
+    margin: 10px 0;
+}
+
+.footer-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin: 5px 0;
+}
+
+.footer-section ul li a {
+    color: #ffffff; /* White for links */
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-section ul li a:hover {
+    color: #FFD700; /* Change to gold on hover */
+    text-decoration: underline;
+}
+
+.footer-bottom {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.footer-bottom p {
+    margin: 0;
+}
+
+/* Add a geometric pattern background */
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url(./images/islamic-ornament-persian-motiff-3d-ramadan-islamic-round-pattern-elements-geometric-circular-ornamental-arabic-symbol-gold-background-vector.jpg); /* Add a geometric pattern */
+    opacity: 0.1; /* Make it subtle */
+    z-index: 0;
+}
+
+.footer-content > div {
+    position: relative; /* Ensure content is above the pattern */
+    z-index: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        align-items: center;
+    }
 }
