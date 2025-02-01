@@ -1,6 +1,6 @@
 
 /* Footer  */
-
+/* Footer Styles */
 .footer {
     background-color: #003366; /* Deep blue background */
     color: #ffffff; /* White text */
@@ -8,6 +8,7 @@
     text-align: center;
     position: relative;
     overflow: hidden;
+    margin-top: 30px;
 }
 
 .footer-content {
@@ -79,6 +80,25 @@
 .footer-content > div {
     position: relative; /* Ensure content is above the pattern */
     z-index: 1;
+}
+.social-icons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+}
+
+
+.social-icons a {
+    color: #ffffff;
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+    
+}
+
+.social-icons a:hover {
+    transform: translateY(-3px);
+    color: #FFD700;
 }
 
 /* Responsive Design */

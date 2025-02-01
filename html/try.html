@@ -1,26 +1,23 @@
-<footer class="footer">
-    <div class="footer-content">
-        <div class="footer-section about">
-            <h2>আমাদের সম্পর্কে</h2>
-            <p>আমাদের ব্লগ ইসলামিক শিক্ষা, সংস্কৃতি এবং সম্প্রদায়ের উন্নয়নের জন্য নিবেদিত। আমাদের সাথে থাকুন এবং ইসলামের আলোকে জীবনযাপন করুন।</p>
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ইসলামিক ক্যালেন্ডার</title>
+    <link rel="stylesheet" href="../css/try.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>ইসলামিক ক্যালেন্ডার 📅</h1>
+        <div class="controls">
+            <select id="year-select" onchange="loadCalendar()"></select>
+            <select id="month-select" onchange="loadCalendar()"></select>
         </div>
-        <div class="footer-section links">
-            <h2>লিঙ্কসমূহ</h2>
-            <ul>
-                <li><a href="#">হোম</a></li>
-                <li><a href="#">ব্লগ</a></li>
-                <li><a href="#">আমাদের সাথে যোগাযোগ করুন</a></li>
-                <li><a href="#">গোপনীয়তা নীতি</a></li>
-                <li><a href="#">শর্তাবলী</a></li>
-            </ul>
-        </div>
-        <div class="footer-section contact">
-            <h2>যোগাযোগ</h2>
-            <p>ইমেইল: info@islamicblog.com</p>
-            <p>ফোন: +880 123 456 7890</p>
-        </div>
+        <div id="today-date" class="today-date">আজকের ইসলামিক তারিখ: লোড হচ্ছে...</div>
+        <div id="calendar" class="calendar"></div>
     </div>
-    <div class="footer-bottom">
-        <p>&copy; 2023 ইসলামিক ব্লগ. সকল অধিকার সংরক্ষিত।</p>
-    </div>
-</footer>
+
+    <script src="../js/try.js"></script>
+</body>
+</html>
