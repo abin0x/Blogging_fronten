@@ -25,4 +25,4 @@ const fetchHadith = async () => {
 
 // Initial fetch when the page loads
 fetchHadith();
-jhj
+// jhj
