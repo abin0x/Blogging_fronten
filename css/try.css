@@ -76,12 +76,12 @@ select:focus {
 }
 
 .prayer-card {
-  background: white;
-  padding: 18px;
+  background-color: #f9f9f9;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease;
-  border: 1px solid #eee;
+  padding: 15px;
+  margin: 10px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .prayer-card.active {
@@ -95,7 +95,7 @@ select:focus {
 }
 
 .prayer-name {
-  font-size: 15px;
+  font-size: 1.2rem;
   color: #2c4778;
   margin-bottom: 8px;
   font-weight: 600;
