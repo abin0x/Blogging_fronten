@@ -5,19 +5,95 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>বাংলাদেশের নামাজের সময়</title>
   <link rel="stylesheet" href="../css/try.css">
+  <link rel="stylesheet" href="../css/nabvar.css">
+  <link rel="stylesheet" href="../css/footer.css">
 </head>
 <body>
-  <div class="container">
-    <h1>📌 জেলার নাম নির্বাচন করুন</h1>
+
+  <header class="header">
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html">
+                <img src="../images/logoo.png" alt="Media Logo" class="logo-image">
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="./index.html">মূলপাতা</a></li>
+            <li><a href="./html/media.html">মিডিয়া</a></li>
+            <li><a href="#blogs">দেয়াল চিত্র</a></li>
+            <li><a href="#contact">ইতিহাস</a></li>
+            <li><a href="#contact">বিয়ে</a></li>
+            <li><a href="#contact">কবর</a></li>
+            <li><a href="./html/calendar.html">ক্যালেন্ডার</a></li>
+            <li><a href="./html/user_blog_submission.html">লেখালিখি</a></li>
+            <li><a href="./html/category.html">ক্যাটাগরিসমূহ</a></li>
+        </ul>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search...">
+            <button id="search-btn">Search</button>
+        </div>
+    </nav>
+</header>
+
+  <!-- Islamic Date & Time Panel -->
+  <div class="info-panel">
+    <div id="islamic-date">ইসলামিক তারিখ লোড হচ্ছে...</div>
+    <div id="current-time">--:--:-- --</div>
+  </div>
+<div class="select">
+  <h1>📌 জেলার নাম নির্বাচন করুন</h1>
     <select id="district">
         <option value="">-- জেলা নির্বাচন করুন --</option>
     </select>
+</div>
+  <div class="container">
+    
 
     <div id="prayer-times" class="prayer-times-container">
         <h2>🕌 নামাজের সময়সূচী</h2>
         <p>জেলা নির্বাচন করুন এবং নামাজের সময় দেখুন।</p>
     </div>
-</div>
+  </div>
+
+
+  <!-- Footer section here  -->
+    
+  <footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section about">
+            <h2>আমাদের সম্পর্কে</h2>
+            <p>আমাদের ব্লগ ইসলামিক শিক্ষা, সংস্কৃতি এবং সম্প্রদায়ের উন্নয়নের জন্য নিবেদিত। আমাদের সাথে থাকুন এবং ইসলামের আলোকে জীবনযাপন করুন।</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+            
+            
+        </div>
+        <div class="footer-section links">
+            <h2>লিঙ্কসমূহ</h2>
+            <ul>
+                <li><a href="/quran"><i class="fas fa-quran"></i> কুরআন তেলাওয়াত</a></li>
+                <li><a href="/hadith"><i class="fas fa-book"></i> হাদিস সমগ্র</a></li>
+                <li><a href="/articles"><i class="fas fa-pen-nib"></i> ইসলামিক প্রবন্ধ</a></li>
+                <li><a href="/dua"><i class="fas fa-hands-praying"></i> দোয়া ও যিকির</a></li>
+            </ul>
+        </div>
+        <div class="footer-section contact">
+            <h2>যোগাযোগ</h2>
+            <p><i class="fas fa-mosque"></i>  পরকাল ব্লগিং ওয়েবসাইট</p>
+            <p><i class="fas fa-map-marker-alt"></i> ঢাকা, বাংলাদেশ</p>
+            <p><i class="fas fa-phone"></i> +৮৮০১৭৮০-৯৪৬২৪৯</p>
+            <p><i class="fas fa-envelope"></i> 4819abin@gmail.com</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; <span id="current-year"></span> পরকাল. সকল অধিকার সংরক্ষিত।</p>
+        <p>মৃত্যু সত্য, এর জন্য সর্বদা প্রস্তুত থাকো।</p>
+    </div>
+</footer>
 
   <script src="../js/try.js"></script>
 </body>

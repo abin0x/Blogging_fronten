@@ -1,4 +1,4 @@
-// 🕌 বাংলাদেশের জেলার তালিকা
+// District List
 const districts = [
   "বরগুনা", "বরিশাল", "ভোলা", "ঝালকাঠী", "পটুয়াখালী", "পিরোজপুর", "বান্দরবান", "ব্রাহ্মনবাড়ীয়া", "চাঁদপুর", 
   "চট্টগ্রাম", "কুমিল্লা", "কক্সবাজার", "ফেনী", "খাগড়াছড়ি", "লক্ষীপুর", "নোয়াখালী", "রাঙ্গামাটি", "ঢাকা", "ফরিদপুর", 
@@ -9,16 +9,14 @@ const districts = [
   "দিনাজপুর", "ঠাকুরগাঁও", "পঞ্চগড়", "হবিগঞ্জ", "মৌলভীবাজার", "সুনামগঞ্জ", "সিলেট"
 ];
 
-// ✅ জেলা ড্রপডাউন পূরণ করুন
+// Initialize District Select
 const districtSelect = document.getElementById("district");
 districts.forEach(district => {
-  const option = document.createElement("option");
-  option.value = district;
-  option.textContent = district;
-  districtSelect.appendChild(option);
+  const option = new Option(district, district);
+  districtSelect.add(option);
 });
 
-// ✅ নামাজের বাংলা নাম
+// Prayer Names in Bengali
 const prayerNamesBn = {
   "Fajr": "ফজর",
   "Sunrise": "সূর্যোদয়",
@@ -33,95 +31,171 @@ const prayerNamesBn = {
   "Lastthird": "শেষ তৃতীয়াংশ"
 };
 
-// ✅ নামাজের সময় API থেকে আনুন (async/await ব্যবহার)
+// Fetch Prayer Times
 const fetchPrayerTimes = async (district) => {
-  const apiUrl = `http://api.aladhan.com/v1/calendarByCity?city=${encodeURIComponent(district)}&country=Bangladesh&method=2`;
-
   try {
-    // লোডিং বার্তা দেখান
     showLoadingMessage("নামাজের সময় লোড হচ্ছে...");
-
-    const response = await fetch(apiUrl);
+    
+    const response = await fetch(`http://api.aladhan.com/v1/calendarByCity?city=${encodeURIComponent(district)}&country=Bangladesh&method=2`);
     const data = await response.json();
-
+    
     if (!data?.data?.[0]?.timings) {
-      showErrorMessage("নামাজের সময় পাওয়া যায়নি।");
+      showErrorMessage("তথ্য পাওয়া যায়নি");
       return;
     }
 
+    // Update Islamic Date
+    const hijriDate = data.data[0].date.hijri;
+    const islamicDate = `${hijriDate.day} ${hijriDate.month.en} ${hijriDate.year}`;
+    document.getElementById('islamic-date').textContent = `ইসলামি তারিখ: ${islamicDate}`;
+
+    // Process Prayer Times
     const times = data.data[0].timings;
-    adjustPrayerTimes(times); // সময় ঠিক করুন
-    showPrayerTimes(times);   // UI-তে দেখান
+    adjustPrayerTimes(times);
+    showPrayerTimes(times);
+
   } catch (error) {
-    showErrorMessage("API থেকে নামাজের সময় আনতে সমস্যা হয়েছে।");
-    console.error("API Fetch Error:", error);
+    showErrorMessage("ডেটা লোড করতে সমস্যা হয়েছে");
+    console.error("Error:", error);
   }
 };
 
-// ✅ নামাজের সময় ঠিক করুন (ফজর -14 মিনিট, আসর +48 মিনিট, ইশা +15 মিনিট)
+// Time Adjustments
 const adjustPrayerTimes = (times) => {
   if (times.Fajr) times.Fajr = adjustTime(times.Fajr, -14);
   if (times.Asr) times.Asr = adjustTime(times.Asr, 48);
   if (times.Isha) times.Isha = adjustTime(times.Isha, 15);
 };
 
-// ✅ সময় ঠিক করুন (HH:MM থেকে সময় পরিবর্তন)
 const adjustTime = (time, offset) => {
-  let match = time.match(/\d{2}:\d{2}/);
-  if (!match) return time; // ভুল হলে আসল সময় দেখান
-
-  let [hours, minutes] = match[0].split(":").map(Number);
-  minutes += offset;
-
-  while (minutes < 0) {
-    minutes += 60;
-    hours = hours === 0 ? 23 : hours - 1;
-  }
-  while (minutes >= 60) {
-    minutes -= 60;
-    hours = (hours + 1) % 24;
-  }
-
-  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+  const match = time.match(/(\d{2}):(\d{2})/);
+  if (!match) return time;
+  
+  let [_, hours, minutes] = match;
+  let totalMinutes = parseInt(hours) * 60 + parseInt(minutes) + offset;
+  
+  totalMinutes = (totalMinutes + 1440) % 1440;
+  const newHours = Math.floor(totalMinutes / 60).toString().padStart(2, '0');
+  const newMinutes = (totalMinutes % 60).toString().padStart(2, '0');
+  
+  return `${newHours}:${newMinutes}`;
 };
 
-// ✅ UI-তে নামাজের সময় দেখান (বাংলা নাম + (+06) বাদ)
+// Display Prayer Times
 const showPrayerTimes = (times) => {
   const prayerTimesDiv = document.getElementById("prayer-times");
-  prayerTimesDiv.innerHTML = ""; // আগের ডাটা মুছুন
+  prayerTimesDiv.innerHTML = '<h2>🕌 নামাজের সময়সূচী</h2>';
+  
+  const grid = document.createElement('div');
+  grid.className = 'prayer-grid';
 
-  const ul = document.createElement("ul");
-  ul.classList.add("prayer-list");
+  const mainPrayers = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Sunset", "Maghrib", "Isha"];
+  const otherPrayers = ["Imsak", "Midnight", "Firstthird", "Lastthird"];
 
-  for (const prayer in times) {
+  // Main Prayers
+  mainPrayers.forEach(prayer => {
     if (prayerNamesBn[prayer]) {
-      const li = document.createElement("li");
-      const timeWithoutZone = times[prayer].split(" ")[0]; // (+06) অংশ মুছে ফেলা
-      li.innerHTML = `<span class="prayer-name">${prayerNamesBn[prayer]}</span> <span class="prayer-time">${timeWithoutZone}</span>`;
-      ul.appendChild(li);
+      const card = document.createElement('div');
+      card.className = 'prayer-card';
+      const cleanTime = formatTimeWithAMPM(times[prayer].split(' ')[0]);
+      card.innerHTML = `
+        <div class="prayer-name">${prayerNamesBn[prayer]}</div>
+        <div class="prayer-time">${cleanTime}</div>
+        <div class="countdown" id="countdown-${prayer}"></div>
+      `;
+      grid.appendChild(card);
     }
-  }
+  });
 
-  prayerTimesDiv.appendChild(ul);
-  prayerTimesDiv.classList.add("fade-in"); // অ্যানিমেশন যোগ করুন
+  // Other Prayers
+  const otherGrid = document.createElement('div');
+  otherGrid.className = 'prayer-grid';
+  otherPrayers.forEach(prayer => {
+    if (prayerNamesBn[prayer]) {
+      const card = document.createElement('div');
+      card.className = 'prayer-card';
+      const cleanTime = formatTimeWithAMPM(times[prayer].split(' ')[0]);
+      card.innerHTML = `
+        <div class="prayer-name">${prayerNamesBn[prayer]}</div>
+        <div class="prayer-time">${cleanTime}</div>
+      `;
+      otherGrid.appendChild(card);
+    }
+  });
+
+  prayerTimesDiv.appendChild(grid);
+  prayerTimesDiv.appendChild(otherGrid);
+  prayerTimesDiv.classList.add('fade-in');
+
+  // Start countdown for main prayers
+  startCountdown(times);
 };
 
-// ✅ লোডিং বার্তা দেখান
-const showLoadingMessage = (message) => {
-  const prayerTimesDiv = document.getElementById("prayer-times");
-  prayerTimesDiv.innerHTML = `<p class="loading">${message}</p>`;
+// Format time with AM/PM
+const formatTimeWithAMPM = (time) => {
+  const [hours, minutes] = time.split(':');
+  const hoursInt = parseInt(hours);
+  const ampm = hoursInt >= 12 ? 'PM' : 'AM';
+  const adjustedHour = hoursInt % 12 || 12; // 12-hour format
+  return `${adjustedHour}:${minutes} ${ampm}`;
 };
 
-// ✅ এরর বার্তা দেখান
-const showErrorMessage = (message) => {
-  const prayerTimesDiv = document.getElementById("prayer-times");
-  prayerTimesDiv.innerHTML = `<p class="error">${message}</p>`;
+// Start Countdown
+const startCountdown = (times) => {
+  const now = new Date();
+  const currentTime = now.getHours() * 60 + now.getMinutes();
+
+  Object.entries(times).forEach(([prayer, time]) => {
+    const [hours, minutes] = time.split(':');
+    const prayerTime = parseInt(hours) * 60 + parseInt(minutes);
+    const diff = prayerTime - currentTime;
+
+    if (diff > 0) {
+      const countdownElement = document.getElementById(`countdown-${prayer}`);
+      if (countdownElement) {
+        setInterval(() => {
+          const now = new Date();
+          const currentTime = now.getHours() * 60 + now.getMinutes();
+          const remaining = prayerTime - currentTime;
+          if (remaining > 0) {
+            const hoursRemaining = Math.floor(remaining / 60);
+            const minutesRemaining = remaining % 60;
+            countdownElement.textContent = `${hoursRemaining} ঘন্টা ${minutesRemaining} মিনিট বাকি`;
+          } else {
+            countdownElement.textContent = "সময় শেষ";
+          }
+        }, 1000);
+      }
+    }
+  });
 };
 
-// ✅ এরিয়া নির্বাচন করলে নামাজের সময় দেখান
-districtSelect.addEventListener("change", () => {
-  const district = districtSelect.value;
-  if (district) {
-    fetchPrayerTimes(district);
-  }
+// Time and Date Functions
+function updateCurrentTime() {
+  const options = {
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  };
+  document.getElementById('current-time').textContent = 
+    new Date().toLocaleTimeString('en-US', options);
+}
+
+// Event Listeners
+districtSelect.addEventListener('change', (e) => {
+  if (e.target.value) fetchPrayerTimes(e.target.value);
 });
+
+// Initial Setup
+setInterval(updateCurrentTime, 1000);
+updateCurrentTime();
+
+// Utility Functions
+const showLoadingMessage = (msg) => {
+  document.getElementById("prayer-times").innerHTML = `<p class="loading">${msg}</p>`;
+};
+
+const showErrorMessage = (msg) => {
+  document.getElementById("prayer-times").innerHTML = `<p class="error">${msg}</p>`;
+};
