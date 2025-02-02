@@ -1,49 +1,105 @@
+/* Global Styles */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f9;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
-
-.container {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 300px;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(to right, #74ebd5, #acb6e5);
+  color: #333;
   text-align: center;
+  margin: 0;
+  padding: 0;
 }
 
-h1 {
+/* Container */
+.container {
+  width: 90%;
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Title */
+.title {
   font-size: 24px;
+  font-weight: bold;
   margin-bottom: 20px;
+}
+
+/* Dropdown Styling */
+.select-box {
+  margin-bottom: 20px;
+}
+
+label {
+  font-size: 18px;
+  font-weight: bold;
 }
 
 select {
   width: 100%;
   padding: 10px;
-  margin-bottom: 20px;
+  font-size: 16px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
+select:hover {
+  background: #f0f0f0;
+}
+
+/* Prayer Times List */
 .prayer-times {
   display: none;
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 8px;
   margin-top: 20px;
 }
 
-.prayer-times ul {
+.prayer-list {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
-.prayer-times li {
+.prayer-list li {
+  padding: 10px;
   font-size: 18px;
-  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #ddd;
+  transition: transform 0.3s ease;
+}
+
+.prayer-list li:hover {
+  transform: scale(1.05);
+  background: #f9f9f9;
+}
+
+.prayer-name {
+  font-weight: bold;
+  color: #007bff;
+}
+
+.prayer-time {
+  font-weight: bold;
+  color: #28a745;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  display: block;
+  animation: fadeIn 0.5s ease-in-out;
 }
