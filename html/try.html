@@ -1,30 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Islamic Hadith</title>
-    <link rel="stylesheet" href="../css/try.css">
+    <title>কাছের মসজিদ খুঁজুন</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+        button {
+            padding: 10px;
+            background: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Hadith Section -->
-    <div class="hadith-container">
-      <h1>Hadith of the Day</h1>
-      <p id="hadith-text">Loading Hadith...</p>
-      <button onclick="fetchHadith()">Load New Hadith</button>
-  </div>
+    <h2>🕌 কাছের মসজিদ খুঁজুন</h2>
+    <button onclick="getUserLocation()">📍 আমার লোকেশন নিন</button>
+    <div id="map"></div>
 
-    <script src="../js/try.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        let map = L.map('map').setView([23.8103, 90.4125], 13); // Default Dhaka, Bangladesh
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        let userMarker;
+        let nearestMosque = null;
+        let minDistance = Infinity;
+
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    let lat = position.coords.latitude;
+                    let lon = position.coords.longitude;
+                    map.setView([lat, lon], 14);
+
+                    if (userMarker) map.removeLayer(userMarker);
+                    
+                    userMarker = L.marker([lat, lon]).addTo(map)
+                        .bindPopup("আপনার বর্তমান অবস্থান 📍")
+                        .openPopup();
+
+                    findNearbyMosques(lat, lon);
+                });
+            } else {
+                alert("আপনার ব্রাউজার লোকেশন সাপোর্ট করে না!");
+            }
+        }
+
+        function findNearbyMosques(lat, lon) {
+            let radius = 5000; // ৫ কিলোমিটার ব্যাসার্ধ
+            let overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];node(around:${radius},${lat},${lon})[amenity=place_of_worship];out;`;
+
+            fetch(overpassUrl)
+                .then(response => response.json())
+                .then(data => {
+                    minDistance = Infinity; // Reset nearest distance
+                    nearestMosque = null; // Reset nearest mosque
+                    
+                    data.elements.forEach(mosque => {
+                        let mosqueLat = mosque.lat;
+                        let mosqueLon = mosque.lon;
+                        let mosqueName = mosque.tags.name || "নাম নেই 🕌";
+
+                        let distance = getDistanceFromLatLonInKm(lat, lon, mosqueLat, mosqueLon);
+                        distance = distance.toFixed(2); // দুই দশমিক ঘর পর্যন্ত দেখাবে
+
+                        let marker = L.marker([mosqueLat, mosqueLon]).addTo(map)
+                            .bindPopup(`
+                                <b>${mosqueName}</b> <br>
+                                📍 দূরত্ব: ${distance} কিমি <br>
+                                <a href="https://www.google.com/maps/dir/?api=1&destination=${mosqueLat},${mosqueLon}" target="_blank">🚗 দিকনির্দেশনা নিন</a>
+                            `);
+
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            nearestMosque = { lat: mosqueLat, lon: mosqueLon, name: mosqueName };
+                        }
+                    });
+
+                    // Nearest Mosque Highlight
+                    if (nearestMosque) {
+                        L.marker([nearestMosque.lat, nearestMosque.lon], { color: 'red' }).addTo(map)
+                            .bindPopup(`<b>📍 কাছের মসজিদ: ${nearestMosque.name}</b> <br> দূরত্ব: ${minDistance} কিমি`);
+                    }
+                })
+                .catch(error => console.error("মসজিদ লোডিংয়ে সমস্যা:", error));
+        }
+
+        function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+            var R = 6371; // পৃথিবীর ব্যাসার্ধ (কিমি)
+            var dLat = deg2rad(lat2 - lat1);
+            var dLon = deg2rad(lon2 - lon1);
+            var a = 
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            var distance = R * c;
+            return distance;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180);
+        }
+    </script>
+
 </body>
 </html>
-
-
-<!-- jfdjf -->
- <!-- klgklgjk jfdjggf  -->
-  <!-- fkjldfd  -->
-   <!-- flkjfdlgjkg  -->
-    <!-- djkfd  -->
-     <!-- fgf g / -->
-      <!-- kljfd  -->
-       <!-- bn  -->
