@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Bukhari Hadith</title>
+    <title>Random Hadith Generator</title>
     <style>
+        /* Reset and Basic Styles */
         * {
             margin: 0;
             padding: 0;
@@ -12,33 +13,64 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
         }
 
+        /* Navbar Styling */
+        .navbar {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .navbar ul li {
+            margin: 0 20px;
+        }
+
+        .navbar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 10px 20px;
+            display: inline-block;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar ul li a:hover {
+            background-color: #007BFF;
+        }
+
+        /* Main Content Container */
         .container {
             text-align: center;
-            width: 80%;
-            max-width: 600px;
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
         }
 
         header h1 {
-            font-size: 24px;
+            font-size: 30px;
+            color: #333;
             margin-bottom: 20px;
         }
 
         .content {
-            margin-bottom: 20px;
             font-size: 18px;
-            color: #333;
+            color: #444;
+            margin-bottom: 30px;
             line-height: 1.6;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         button {
@@ -49,6 +81,7 @@
             border: none;
             cursor: pointer;
             border-radius: 5px;
+            transition: background-color 0.3s ease;
         }
 
         button:hover {
@@ -67,7 +100,7 @@
 
         .hadith-details h2 {
             margin-bottom: 10px;
-            font-size: 20px;
+            font-size: 22px;
             color: #444;
         }
 
@@ -75,55 +108,148 @@
             font-size: 16px;
             margin-bottom: 10px;
         }
+
+        /* Mobile Responsive */
+        @media screen and (max-width: 768px) {
+            .navbar ul {
+                flex-direction: column;
+            }
+
+            .navbar ul li {
+                margin: 10px 0;
+            }
+        }
     </style>
 </head>
 <body>
 
+    <!-- Navbar -->
+    <div class="navbar">
+        <ul>
+            <li><a href="#" id="bukhari-link">Bukhari</a></li>
+            <li><a href="#" id="muslim-link">Muslim</a></li>
+            <li><a href="#" id="abudawud-link">Abu Dawud</a></li>
+            <li><a href="#" id="ibnmajah-link">Ibn Majah</a></li>
+            <li><a href="#" id="tirmidhi-link">Tirmidhi</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
     <div class="container">
         <header>
-            <h1>Random Bukhari Hadith</h1>
+            <h1>Random Hadith Generator</h1>
         </header>
 
         <div id="hadith-content" class="content">
-            <p>Loading...</p>
+            <p>Select a Hadith book from the menu above to get a random Hadith.</p>
         </div>
 
         <button id="fetch-button">Get Random Hadith</button>
     </div>
 
     <script>
-        // DOM elements
+        // DOM Elements
         const fetchButton = document.getElementById('fetch-button');
         const hadithContent = document.getElementById('hadith-content');
+        const bookLinks = {
+            bukhari: "https://random-hadith-generator.vercel.app/bukhari/",
+            muslim: "https://random-hadith-generator.vercel.app/muslim/",
+            abudawud: "https://random-hadith-generator.vercel.app/abudawud/",
+            ibnmajah: "https://random-hadith-generator.vercel.app/ibnmajah/",
+            tirmidhi: "https://random-hadith-generator.vercel.app/tirmidhi/"
+        };
 
-        // Function to fetch Hadith from the API with a dynamic ID
-        function fetchHadith() {
-            // Generate a random number between 1 and 7563 for the ID
-            const randomId = Math.floor(Math.random() * 7563) + 1;
+        const bookLimits = {
+            bukhari: 7563,
+            muslim: 3032,
+            abudawud: 3998,
+            ibnmajah: 4342,
+            tirmidhi: 3956
+        };
 
-            fetch(`https://random-hadith-generator.vercel.app/bukhari/${randomId}`)
-            .then(response => response.json())
-            .then(data => {
-                console.log(data); // Check the response data structure in the console
+        let selectedBook = 'bukhari'; // Default book
 
-                if (!data || !data.data) {
-                    hadithContent.innerHTML = `<div class="error">Error fetching data. No Hadith found.</div>`;
-                    return;
+        // Add event listeners to the navbar links
+        document.getElementById('bukhari-link').addEventListener('click', () => setSelectedBook('bukhari'));
+        document.getElementById('muslim-link').addEventListener('click', () => setSelectedBook('muslim'));
+        document.getElementById('abudawud-link').addEventListener('click', () => setSelectedBook('abudawud'));
+        document.getElementById('ibnmajah-link').addEventListener('click', () => setSelectedBook('ibnmajah'));
+        document.getElementById('tirmidhi-link').addEventListener('click', () => setSelectedBook('tirmidhi'));
+
+        // Add event listener to fetch random Hadith when the button is clicked
+        fetchButton.addEventListener('click', fetchHadith);
+
+        // Function to set the selected book and fetch a random Hadith
+        function setSelectedBook(book) {
+            selectedBook = book;
+            fetchHadith(); // Fetch Hadith when a book is selected
+            highlightSelectedBook(book);
+        }
+
+        // Function to highlight the selected book in the navbar
+        function highlightSelectedBook(book) {
+            for (const key in bookLinks) {
+                const link = document.getElementById(`${key}-link`);
+                if (key === book) {
+                    link.style.backgroundColor = '#007BFF';
+                    link.style.color = 'white';
+                } else {
+                    link.style.backgroundColor = '';
+                    link.style.color = '';
                 }
+            }
+        }
 
-                const hadithData = data.data; // Get the hadith data from the response
-                renderHadith(hadithData);
-            })
-            .catch(error => {
-                console.error('Error:', error); // Log any errors to the console
-                hadithContent.innerHTML = `<div class="error">Something went wrong.</div>`;
+        // Function to fetch Hadith from the selected book API
+        function fetchHadith() {
+            const randomId = Math.floor(Math.random() * bookLimits[selectedBook]) + 1;
+            fetch(`${bookLinks[selectedBook]}${randomId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data || !data.data) {
+                        hadithContent.innerHTML = `<div class="error">Error fetching data. No Hadith found.</div>`;
+                        return;
+                    }
+
+                    const hadithData = data.data;
+                    renderHadith(hadithData);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    hadithContent.innerHTML = `<div class="error">Something went wrong.</div>`;
+                });
+        }
+
+        // Function to translate text using Google Translator API via RapidAPI
+        function translateText(text, targetLanguage) {
+            const data = JSON.stringify({
+                q: text
             });
+
+            const xhr = new XMLHttpRequest();
+            xhr.withCredentials = true;
+
+            xhr.addEventListener('readystatechange', function () {
+                if (this.readyState === this.DONE) {
+                    const response = JSON.parse(this.responseText);
+                    const translatedText = response.data.translations[0].translatedText;
+                    renderTranslatedHadith(translatedText); // Render translated Hadith
+                }
+            });
+
+            xhr.open('POST', 'https://google-translator9.p.rapidapi.com/v2/detect');
+            xhr.setRequestHeader('x-rapidapi-key', '947c8d03b9mshd8bd8ed20c26b92p162a6ajsn2e8732db163b');
+            xhr.setRequestHeader('x-rapidapi-host', 'google-translator9.p.rapidapi.com');
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            xhr.send(data);
         }
 
         // Function to render the fetched Hadith on the page
         function renderHadith(hadithData) {
             const book = hadithData.book.trim();
             const chapter = hadithData.chapterName.trim();
+            const bookname = hadithData.bookName.trim();
             const hadithEnglish = hadithData.hadith_english.trim();
             const header = hadithData.header.trim();
             const reference = hadithData.refno.trim();
@@ -131,19 +257,28 @@
             hadithContent.innerHTML = `
                 <div class="hadith-details">
                     <h2>${book}</h2>
+                    <p><strong>Book Name:</strong> ${bookname}</p>
                     <p><strong>Chapter:</strong> ${chapter}</p>
-                    <p><strong>Hadith:</strong> ${hadithEnglish}</p>
+                    <p><strong>Hadith (English):</strong> ${hadithEnglish}</p>
                     <p><strong>Source:</strong> ${header}</p>
                     <p><strong>Reference:</strong> ${reference}</p>
                 </div>
             `;
+
+            // Translate the English Hadith after displaying the original
+            translateText(hadithEnglish, 'bn');
         }
 
-        // Event listener for the button to fetch new Hadith on click
-        fetchButton.addEventListener('click', fetchHadith);
+        // Function to render the translated Hadith
+        function renderTranslatedHadith(translatedText) {
+            const translatedSection = document.createElement('p');
+            translatedSection.innerHTML = `<strong>Translated (Bangla):</strong> ${translatedText}`;
+            hadithContent.appendChild(translatedSection);
+        }
 
-        // Initial fetch when the page loads
+        // Initial fetch on page load for the default selected book
         fetchHadith();
+
     </script>
 
 </body>
