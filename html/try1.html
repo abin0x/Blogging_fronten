@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Hadith</title>
+    <title>Random Bukhari Hadith</title>
     <style>
         * {
             margin: 0;
@@ -12,168 +12,139 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            background-color: #f5f5f5;
-            color: #333;
-            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: #1e40af;
-            color: white;
-            padding: 20px;
             text-align: center;
-        }
-
-        .content {
+            width: 80%;
+            max-width: 600px;
+            background-color: white;
             padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .hadith-text {
+        header h1 {
+            font-size: 24px;
             margin-bottom: 20px;
         }
 
-        .arabic {
-            font-size: 1.5em;
-            text-align: right;
-            margin-bottom: 15px;
-            line-height: 1.8;
+        .content {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #333;
+            line-height: 1.6;
         }
 
-        .english {
-            margin-bottom: 15px;
-            font-size: 1.1em;
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
         }
 
-        .urdu {
-            text-align: right;
-            margin-bottom: 15px;
-            font-size: 1.1em;
-        }
-
-        .source {
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            font-size: 1.2em;
-            color: #666;
+        button:hover {
+            background-color: #0056b3;
         }
 
         .error {
-            text-align: center;
-            padding: 20px;
-            color: #dc2626;
+            color: red;
+            font-size: 18px;
+            margin-top: 20px;
         }
 
-        .refresh-btn {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background: #1e40af;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background 0.3s ease;
+        .hadith-details {
+            margin-top: 20px;
         }
 
-        .refresh-btn:hover {
-            background: #1e3a8a;
+        .hadith-details h2 {
+            margin-bottom: 10px;
+            font-size: 20px;
+            color: #444;
         }
 
-        .refresh-btn:disabled {
-            background: #93c5fd;
-            cursor: not-allowed;
-        }
-
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-
-            .arabic {
-                font-size: 1.3em;
-            }
-
-            .english, .urdu {
-                font-size: 1em;
-            }
+        .hadith-details p {
+            font-size: 16px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <div class="header">
-            <h1>Daily Hadith</h1>
+        <header>
+            <h1>Random Bukhari Hadith</h1>
+        </header>
+
+        <div id="hadith-content" class="content">
+            <p>Loading...</p>
         </div>
-        <div id="hadithContent" class="content">
-            <div class="loading">Loading hadith...</div>
-        </div>
-        <button id="refreshBtn" class="refresh-btn" disabled>Load New Hadith</button>
+
+        <button id="fetch-button">Get Random Hadith</button>
     </div>
 
     <script>
-        const apiKey = '$2y$10$WibpKvbAwwG1LEgXbgAv0OqM9c0PDi97DcXYHpwokaMLbpnBbe';
-        const hadithContent = document.getElementById('hadithContent');
-        const refreshBtn = document.getElementById('refreshBtn');
+        // DOM elements
+        const fetchButton = document.getElementById('fetch-button');
+        const hadithContent = document.getElementById('hadith-content');
 
-        async function fetchHadith() {
-            try {
-                refreshBtn.disabled = true;
-                hadithContent.innerHTML = '<div class="loading">Loading hadith...</div>';
+        // Function to fetch Hadith from the API with a dynamic ID
+        function fetchHadith() {
+            // Generate a random number between 1 and 7563 for the ID
+            const randomId = Math.floor(Math.random() * 7563) + 1;
 
-                const response = await fetch(`https://hadithapi.com/api/hadiths?apiKey=${apiKey}&paginate=1`);
-                
-                if (!response.ok) {
-                    throw new Error('Failed to fetch hadith');
+            fetch(`https://random-hadith-generator.vercel.app/bukhari/${randomId}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data); // Check the response data structure in the console
+
+                if (!data || !data.data) {
+                    hadithContent.innerHTML = `<div class="error">Error fetching data. No Hadith found.</div>`;
+                    return;
                 }
 
-                const data = await response.json();
-                const hadith = data.hadiths.data[0];
-
-                hadithContent.innerHTML = `
-                    <div class="hadith-text">
-                        <div class="arabic">${hadith.hadithArabic}</div>
-                        <div class="english">${hadith.hadithEnglish}</div>
-                        ${hadith.hadithUrdu ? `<div class="urdu">${hadith.hadithUrdu}</div>` : ''}
-                    </div>
-                    <div class="source">
-                        <p><strong>Source:</strong> ${hadith.book.bookName}, Hadith ${hadith.hadithNumber}</p>
-                        ${hadith.status ? `<p><strong>Status:</strong> ${hadith.status}</p>` : ''}
-                    </div>
-                `;
-            } catch (error) {
-                hadithContent.innerHTML = `
-                    <div class="error">
-                        Unable to load hadith. Please try again later.
-                    </div>
-                `;
-            } finally {
-                refreshBtn.disabled = false;
-            }
+                const hadithData = data.data; // Get the hadith data from the response
+                renderHadith(hadithData);
+            })
+            .catch(error => {
+                console.error('Error:', error); // Log any errors to the console
+                hadithContent.innerHTML = `<div class="error">Something went wrong.</div>`;
+            });
         }
 
-        refreshBtn.addEventListener('click', fetchHadith);
+        // Function to render the fetched Hadith on the page
+        function renderHadith(hadithData) {
+            const book = hadithData.book.trim();
+            const chapter = hadithData.chapterName.trim();
+            const hadithEnglish = hadithData.hadith_english.trim();
+            const header = hadithData.header.trim();
+            const reference = hadithData.refno.trim();
 
-        // Fetch initial hadith
+            hadithContent.innerHTML = `
+                <div class="hadith-details">
+                    <h2>${book}</h2>
+                    <p><strong>Chapter:</strong> ${chapter}</p>
+                    <p><strong>Hadith:</strong> ${hadithEnglish}</p>
+                    <p><strong>Source:</strong> ${header}</p>
+                    <p><strong>Reference:</strong> ${reference}</p>
+                </div>
+            `;
+        }
+
+        // Event listener for the button to fetch new Hadith on click
+        fetchButton.addEventListener('click', fetchHadith);
+
+        // Initial fetch when the page loads
         fetchHadith();
     </script>
+
 </body>
 </html>
