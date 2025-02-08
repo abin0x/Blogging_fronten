@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +16,7 @@
         }
 
         .container {
-            width: 80%;
+            width: 90%;
             max-width: 960px;
             margin: 20px auto;
             padding: 30px;
@@ -42,16 +42,17 @@
             color: #555;
         }
 
-        .input-group input[type="number"] {
+        .input-group input[type="number"], .input-group select {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
             border-radius: 5px;
             box-sizing: border-box;
             font-size: 1em;
+            margin-bottom: 5px;
         }
 
-        .input-group input[type="number"]:focus {
+        .input-group input[type="number"]:focus, .input-group select:focus {
             border-color: #28a745;
             box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
             outline: none;
@@ -81,6 +82,7 @@
             border-radius: 8px;
             border: 1px solid #eee;
             text-align: center;
+            display: none;
         }
 
         #result-area h2 {
@@ -100,16 +102,19 @@
             color: #777;
             text-align: center;
         }
+        .section-heading {
+            color: #37474f;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>যাকাত ক্যালকুলেটর</h1>
 
-        <div class="input-group">
-            <label for="cash-input">নগদ টাকা (ব্যাংক এবং হাতে) :</label>
-            <input type="number" id="cash-input" placeholder="টাকা লিখুন">
-        </div>
+        <div class="section-heading">সম্পদসমূহ</div>
 
         <div class="input-group">
             <label for="gold-input">স্বর্ণ (ভরি):</label>
@@ -122,6 +127,11 @@
         </div>
 
         <div class="input-group">
+            <label for="cash-input">নগদ টাকা (ব্যাংক এবং হাতে) :</label>
+            <input type="number" id="cash-input" placeholder="টাকা লিখুন">
+        </div>
+
+        <div class="input-group">
             <label for="investments-input">বিনিয়োগ (যেমন - ফিক্সড ডিপোজিট, শেয়ার):</label>
             <input type="number" id="investments-input" placeholder="টাকা লিখুন">
         </div>
@@ -131,50 +141,99 @@
             <input type="number" id="loan-receivable-input" placeholder="টাকা লিখুন">
         </div>
 
+        <div class="input-group">
+            <label for="business-assets-input">ব্যবসায়িক সম্পদ (দোকানের মাল, জমি, ইত্যাদি):</label>
+            <input type="number" id="business-assets-input" placeholder="টাকা লিখুন">
+        </div>
+
+        <div class="section-heading">দেনা ও খরচ</div>
+
+        <div class="input-group">
+            <label for="rent-bills-input">ভাড়া ও বিল (বাড়ি, দোকান, ইত্যাদি):</label>
+            <input type="number" id="rent-bills-input" placeholder="টাকা লিখুন">
+        </div>
+
+        <div class="input-group">
+            <label for="salary-input">কর্মচারীর বেতন:</label>
+            <input type="number" id="salary-input" placeholder="টাকা লিখুন">
+        </div>
+
+        <div class="input-group">
+            <label for="debt-input">ঋণ (বাকিতে ক্রয় বা অন্য ঋণ):</label>
+            <input type="number" id="debt-input" placeholder="টাকা লিখুন">
+        </div>
+
+         <div class="input-group">
+            <label for="last-zakat-input">বিগত বছরের অনাদায়ী যাকাত:</label>
+            <input type="number" id="last-zakat-input" placeholder="টাকা লিখুন">
+        </div>
+
+        <div class="input-group">
+            <label for="nisab-standard">নেসাব স্ট্যান্ডার্ড নির্বাচন করুন:</label>
+            <select id="nisab-standard">
+                <option value="silver">দরিদ্রবান্ধব নেসাব (রূপা)</option>
+                <option value="gold">স্বার্থ বান্ধব নেসাব (স্বর্ণ)</option>
+            </select>
+        </div>
+
+
         <button class="calculate-button" onclick="calculateZakat()">যাকাত হিসাব করুন</button>
 
-        <div id="result-area" style="display:none;">
+        <div id="result-area">
             <h2>আপনার যাকাতের পরিমাণ</h2>
             <p id="zakat-amount"></p>
         </div>
 
-        <p class="disclaimer">দয়া করে মনে রাখবেন, এই ক্যালকুলেটরটি শুধুমাত্র একটি আনুমানিক হিসাব। সঠিক যাকাত জানার জন্য একজন ইসলামিক স্কলারের সাথে পরামর্শ করুন।</p>
+        <p class="disclaimer">দয়া করে মনে রাখবেন, এই ক্যালকুলেটরটি শুধুমাত্র একটি আনুমানিক হিসাব। আপনার "জরুরী প্রয়োজন" এখানে অন্তর্ভুক্ত করা হয়নি এবং যাকাতের বিস্তারিত মাসায়েল জানার জন্য একজন ইসলামিক স্কলারের সাথে পরামর্শ করা উচিত।</p>
     </div>
 
     <script>
         function calculateZakat() {
-            const cash = parseFloat(document.getElementById('cash-input').value) || 0;
             const goldInVori = parseFloat(document.getElementById('gold-input').value) || 0;
             const silverInVori = parseFloat(document.getElementById('silver-input').value) || 0;
+            const cash = parseFloat(document.getElementById('cash-input').value) || 0;
             const investments = parseFloat(document.getElementById('investments-input').value) || 0;
             const loanReceivable = parseFloat(document.getElementById('loan-receivable-input').value) || 0;
+            const businessAssets = parseFloat(document.getElementById('business-assets-input').value) || 0;
+
+            const rentBills = parseFloat(document.getElementById('rent-bills-input').value) || 0;
+            const salary = parseFloat(document.getElementById('salary-input').value) || 0;
+            const debt = parseFloat(document.getElementById('debt-input').value) || 0;
+            const lastZakat = parseFloat(document.getElementById('last-zakat-input').value) || 0;
+
+            const nisabStandard = document.getElementById('nisab-standard').value;
 
             // Current approximate value of 1 vori gold and silver (adjust as needed)
-            const goldValuePerVori = 120000; // Example: 85000 BDT per vori gold
-            const silverValuePerVori = 2100;  // Example: 1200 BDT per vori silver
-            const nisabGoldInVori = 85; // Nisab for gold is approximately 85 grams (adjust vori if needed)
-            const nisabSilverInVori = 595; // Nisab for silver is approximately 595 grams (adjust vori if needed)
-
+            const goldValuePerVori = 120000;
+            const silverValuePerVori = 2100; // Example: 1000 BDT per vori silver (adjust as needed)
+            const nisabGoldInVori = 7.5;
+            const nisabSilverInVori = 52.5;
 
             const totalGoldValue = goldInVori * goldValuePerVori;
             const totalSilverValue = silverInVori * silverValuePerVori;
-            let totalWealth = cash + totalGoldValue + totalSilverValue + investments + loanReceivable;
+            let totalAssets = cash + totalGoldValue + totalSilverValue + investments + loanReceivable + businessAssets;
 
+            let totalLiabilities = rentBills + salary + debt + lastZakat;
+            let netWealth = totalAssets - totalLiabilities;
 
-            //Nisab value calculation (using gold standard for simplicity in this example)
-            const nisabValue = nisabGoldInVori * goldValuePerVori;
+            let nisabValue;
+            if (nisabStandard === 'silver') {
+                nisabValue = nisabSilverInVori * silverValuePerVori;
+            } else {
+                nisabValue = nisabGoldInVori * goldValuePerVori;
+            }
 
 
             let zakatAmount = 0;
-            if (totalWealth >= nisabValue) {
-                zakatAmount = totalWealth * 0.025; // 2.5% zakat
+            if (netWealth >= nisabValue) {
+                zakatAmount = netWealth * 0.025; // 2.5% zakat
             }
 
             const resultArea = document.getElementById('result-area');
             const zakatAmountDisplay = document.getElementById('zakat-amount');
 
             zakatAmountDisplay.textContent =  '৳ ' + zakatAmount.toFixed(2);
-            resultArea.style.display = 'block'; // Show the result area
+            resultArea.style.display = 'block';
         }
     </script>
 </body>
