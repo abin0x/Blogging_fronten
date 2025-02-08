@@ -8,21 +8,43 @@
         :root {
             --primary-color: #2c594c;
             --secondary-color: #1d3d34;
+            --background-light: #f5f5f5;
+            --background-dark: #1e1e1e;
+            --text-light: #333;
+            --text-dark: #f5f5f5;
         }
 
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-light);
+            color: var(--text-light);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.night-mode {
+            background-color: var(--background-dark);
+            color: var(--text-dark);
         }
 
         .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--primary-color);
         }
 
         .controls {
@@ -37,6 +59,17 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             min-width: 150px;
+            background-color: white;
+            color: var(--text-light);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.night-mode input,
+        body.night-mode select,
+        body.night-mode button {
+            background-color: #333;
+            color: var(--text-dark);
+            border-color: #555;
         }
 
         button {
@@ -61,7 +94,11 @@
 
         .translation {
             margin: 15px 0;
-            color: #444;
+            color: var(--text-light);
+        }
+
+        body.night-mode .translation {
+            color: var(--text-dark);
         }
 
         .audio-controls {
@@ -75,6 +112,11 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            transition: background-color 0.3s;
+        }
+
+        body.night-mode .audio-controls {
+            background-color: #333;
         }
 
         .progress-bar {
@@ -82,6 +124,10 @@
             height: 5px;
             background: #eee;
             position: relative;
+        }
+
+        body.night-mode .progress-bar {
+            background: #555;
         }
 
         .progress {
@@ -104,6 +150,12 @@
             cursor: pointer;
             border-radius: 5px;
             background: #eee;
+            transition: background 0.3s;
+        }
+
+        body.night-mode .tab {
+            background: #555;
+            color: var(--text-dark);
         }
 
         .tab.active {
@@ -121,12 +173,58 @@
         .verse-container.playing {
             background: #f8f8f8;
         }
+
+        body.night-mode .verse-container.playing {
+            background: #333;
+        }
+
+        .bookmark-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #888;
+            transition: color 0.3s;
+        }
+
+        .bookmark-btn.active {
+            color: #ffcc00;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .night-mode-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--text-light);
+        }
+
+        body.night-mode .night-mode-toggle {
+            color: var(--text-dark);
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1>Quran Player with Translations</h1>
+        <div class="header">
+            <h1>Quran Player with Translations</h1>
+            <button class="night-mode-toggle" onclick="toggleNightMode()">🌙</button>
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search verses...">
+        </div>
         <div class="controls">
             <input type="number" id="surahNumber" placeholder="Surah (1-114)" min="1" max="114">
             <select id="reciter">
@@ -162,6 +260,7 @@
         let currentVerse = 1;
         let totalVerses = 0;
         let surahNumber = 0;
+        let bookmarks = [];
         const audioBaseURL = 'https://cdn.islamic.network/quran/audio/128/';
         const translations = {
             en: { name: 'English', edition: 'en.transliteration' },
@@ -208,9 +307,12 @@
                 verseDiv.className = 'verse-container';
                 verseDiv.id = `verse-${index + 1}`;
 
+                const isBookmarked = bookmarks.includes(`${surahNumber}:${index + 1}`);
+
                 verseDiv.innerHTML = `
                     <div class="arabic">${ayah.text}</div>
                     <div class="translation">${translationSurah.ayahs[index].text}</div>
+                    <button class="bookmark-btn ${isBookmarked ? 'active' : ''}" onclick="toggleBookmark(${surahNumber}, ${index + 1})">⭐</button>
                 `;
 
                 verseDiv.onclick = () => playVerse(index + 1);
@@ -303,6 +405,48 @@
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
         }
+
+        function toggleBookmark(surah, verse) {
+            const key = `${surah}:${verse}`;
+            if (bookmarks.includes(key)) {
+                bookmarks = bookmarks.filter(b => b !== key);
+            } else {
+                bookmarks.push(key);
+            }
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            displayVerses(arabicJson.data, translationJson.data);
+        }
+
+        function toggleNightMode() {
+            document.body.classList.toggle('night-mode');
+            localStorage.setItem('nightMode', document.body.classList.contains('night-mode'));
+        }
+
+        function loadBookmarks() {
+            const savedBookmarks = localStorage.getItem('bookmarks');
+            if (savedBookmarks) {
+                bookmarks = JSON.parse(savedBookmarks);
+            }
+        }
+
+        function loadNightMode() {
+            const nightMode = localStorage.getItem('nightMode');
+            if (nightMode === 'true') {
+                document.body.classList.add('night-mode');
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.verse-container').forEach(verse => {
+                const text = verse.innerText.toLowerCase();
+                verse.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        });
+
+        loadBookmarks();
+        loadNightMode();
     </script>
 </body>
 </html>
+<!-- mmbm  -->
