@@ -1,197 +1,263 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Quran Reader</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Tasbih Counter with Digital Digits</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Electrolize&display=swap">
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
+            font-family: 'Arial', sans-serif;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
+            background-color: #e0f7fa; /* Light Cyan background */
             margin: 0;
         }
 
         .container {
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 20px;
             background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            flex-grow: 1;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            text-align: center;
+            display: flex; /* Enable flex layout for vertical alignment */
+            flex-direction: column; /* Stack elements vertically */
+            align-items: center; /* Center items horizontally within container */
         }
 
         h1 {
-            font-family: 'Amiri', serif;
-            color: #3498db;
-            margin-bottom: 20px;
-            text-align: center;
+            color: #37474f;
+            margin-bottom: 10px; /* Reduced margin below heading */
+            font-size: 2.8em;
+            text-shadow: 2px 2px 3px rgba(0,0,0,0.1);
         }
 
-        #surahSelect {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-            appearance: none;
-            background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath fill='rgba(52, 152, 219, 1)' d='M7 10l5 5 5-5z'/%3e%3c/svg%3e") no-repeat right 10px center;
-            padding-right: 30px;
+        #counter-display {
+            font-family: 'Electrolize', sans-serif; /* Digital clock font */
+            font-size: 5em; /* Increased digit size */
+            color: #263238; /* Darker blue-gray for digits */
+            padding: 15px 25px; /* Padding around digits */
+            background-color: #eceff1; /* Light gray background for digits */
+            border-radius: 15px; /* Rounded background for digits */
+            box-shadow: inset 2px 2px 5px #b0bec5, /* Inner shadow for depth */
+                        3px 3px 8px rgba(0,0,0,0.2); /* Outer shadow */
+            margin-bottom: 25px; /* Space below digits */
+            text-align: center; /* Center text inside display */
+            letter-spacing: 6px; /* Spacing between digits */
         }
 
-        #ayahContainer {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            counter-reset: ayah-counter;
-        }
 
-        .ayahDiv {
-            border: 1px solid #eee;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        #counter-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             position: relative;
-            text-align: center;
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-            overflow: hidden;
-            cursor: pointer; /* Make ayahDiv clickable */
+            margin-bottom: 20px; /* Reduced margin for counter area */
         }
 
-        .ayahDiv:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .ayahDiv::before {
-            content: counter(ayah-counter) ".";
-            counter-increment: ayah-counter;
+        #rope {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            font-size: 18px;
-            color: #777;
+            height: 10px; /* Slightly thinner rope */
+            width: 100%;
+            background: #6d4c41;
+            border-radius: 5px; /* Rounded rope ends */
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            z-index: 1;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
-        .ayahDiv p {
-            font-size: 22px;
-            font-family: 'Amiri', serif;
-            direction: rtl;
-            margin-bottom: 15px;
-            color: #2c3e50;
+        #stone-container {
+            display: flex;
+            width: 240px; /* Slightly narrower stone container */
+            overflow: hidden;
+            margin-right: 20px; /* Reduced right margin */
+            z-index: 0;
+            position: relative;
+            justify-content: flex-start;
+            padding: 10px 0; /* Reduced padding for stones */
         }
 
-        #audio-controls {
-            margin-top: 30px;
-            text-align: center;
+        .stone {
+            width: 28px; /* Slightly smaller stone size */
+            height: 28px;
+            border-radius: 50%;
+            margin-right: 6px; /* Adjusted stone spacing */
+            animation-duration: 0.5s;
+            animation-timing-function: ease-out;
+            position: relative;
+            box-shadow: 3px 3px 7px rgba(0,0,0,0.4),
+                        inset 1px 1px 2px rgba(255,255,255,0.2);
+            background-image: radial-gradient(circle at 30% 30%, #a1887f, #5d4037);
+            border: 2px solid #4e342e;
         }
 
-        #main-audio {
-            width: 80%;
-            max-width: 600px;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        .stone:last-child {
+            margin-right: 0;
         }
 
-        .playing {
-            background-color: #e0f2f7;
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px; /* Reduced gap between buttons */
+            margin-top: 10px; /* Reduced margin above buttons */
         }
 
-        @media (max-width: 768px) {
-            #ayahContainer {
-                grid-template-columns: 1fr;
+        .controls button {
+            padding: 14px 30px; /* Adjusted button padding */
+            border: none;
+            border-radius: 10px; /* More rounded buttons */
+            background-color: #43a047;
+            color: white;
+            font-size: 1.1em; /* Slightly smaller button text */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Reduced gap in buttons */
+            box-shadow: 3px 3px 7px rgba(0,0,0,0.25);
+        }
+
+        .controls button.decrement {
+            background-color: #e53935;
+        }
+
+        .controls button#reset-btn {
+            background-color: #fdd835;
+            color: #424242;
+        }
+
+        .controls button:hover {
+            opacity: 0.9;
+            transform: scale(1.05); /* Slightly less scale on hover */
+        }
+
+        .controls button:active {
+            transform: scale(1.0);
+        }
+
+        .icon {
+            height: 1.2em; /* Slightly smaller icons */
+            width: 1.2em;
+            fill: white;
+        }
+
+        .controls button#reset-btn .icon {
+            fill: #424242;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(-50px); /* Slightly less slide in */
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
             }
         }
 
-        footer {
-            background-color: #333;
-            color: #fff;
-            padding: 10px;
-            text-align: center;
-            margin-top: 20px;
+        .animate-increment {
+            animation-name: slideInRight;
+            animation-duration: 0.4s;
+            animation-timing-function: ease-out;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Quran Reader</h1>
-        <select id="surahSelect">
-            <option value="">Select a Surah</option>
-        </select>
-        <div id="ayahContainer"></div>
-        <div id="audio-controls">
-            <audio id="main-audio" controls></audio>
+        <h1>তাসবিহ কাউন্টার</h1>
+        <div id="counter-display">0</div> <div id="counter-area">
+            <div id="rope"></div>
+            <div id="stone-container">
+            </div>
+        </div>
+        <div class="controls">
+            <button class="decrement" id="decrement-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
+                    <path fill-rule="evenodd" d="M3.75 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H4.5a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+                </svg>
+                Decrement
+            </button>
+            <button id="reset-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
+                    <path d="M4.913 1.036a.75.75 0 00-.902.902L7.728 5H2.25a.75.75 0 000 1.5h4.304l-6.64 6.64a.75.75 0 001.06 1.06l6.64-6.64v4.304a.75.75 0 001.5 0V5.272l3.063 3.063a.75.75 0 001.06-1.06L8.728 2.939l2.39 2.39a.75.75 0 001.06-1.06L9.728 1.939a.75.75 0 00-1.06 0l-3.75 3.75V1.75a.75.75 0 00-1.5 0V5H4.272l-3.236-3.236a.75.75 0 00.001-1.06zM18.964 9.236a.75.75 0 001.06 0l3.75-3.75V22.25a.75.75 0 001.5 0V19h4.272l3.236 3.236a.75.75 0 00-.001 1.06l-.902.902L16.272 19h5.478a.75.75 0 000-1.5h-5.478l6.64-6.64a.75.75 0 00-1.06-1.06l-6.64 6.64v-4.304a.75.75 0 00-1.5 0v4.728l-3.063-3.063a.75.75 0 00-1.06 1.06l2.39 2.39-2.39 2.39a.75.75 0 00-1.06 1.06l.902.902a.75.75 0 00.902-.902l3.75-3.75V9.75a.75.75 0 001.5 0v-3.5h4.728l3.236 3.236a.75.75 0 00-.001 1.06z" />
+                </svg>
+                Reset
+            </button>
+            <button id="increment-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
+                    <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />
+                </svg>
+                Increment
+            </button>
         </div>
     </div>
-    <footer>
-        &copy; 2024 Quran Reader. All rights reserved.
-    </footer>
-
     <script>
-        const surahSelect = document.getElementById('surahSelect');
-        const ayahContainer = document.getElementById('ayahContainer');
-        const mainAudio = document.getElementById('main-audio');
+        let count = 0;
+        const counterDisplay = document.getElementById('counter-display');
+        const incrementBtn = document.getElementById('increment-btn');
+        const decrementBtn = document.getElementById('decrement-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const stoneContainer = document.getElementById('stone-container');
 
-        fetch('https://api.alquran.cloud/v1/quran/ar.alafasy')
-            .then(response => response.json())
-            .then(data => {
-                data.data.surahs.forEach(surah => {
-                    const option = document.createElement('option');
-                    option.value = surah.number;
-                    option.text = surah.name + " (" + surah.englishName + ")";
-                    surahSelect.appendChild(option);
+        // Sound effects
+        const incrementSound = new Audio('https://myislam.sfo3.digitaloceanspaces.com/assets/2024/11/BeadsDrop.mp3');
+        const decrementSound = new Audio('https://myislam.sfo3.digitaloceanspaces.com/assets/2024/11/BeadsDrop.mp3');
+
+        // Function to create a stone element
+        function createStone() {
+            const stone = document.createElement('div');
+            stone.classList.add('stone');
+            return stone;
+        }
+
+        // Function to update the stone display
+        function updateStoneDisplay() {
+            stoneContainer.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const stone = createStone();
+                stoneContainer.appendChild(stone);
+            }
+            if (stoneContainer.children.length > 0) {
+                stoneContainer.lastElementChild.classList.add('animate-increment');
+                stoneContainer.lastElementChild.addEventListener('animationend', () => {
+                    stoneContainer.lastElementChild.classList.remove('animate-increment');
                 });
+            }
+        }
 
-                surahSelect.addEventListener('change', () => {
-                    const selectedSurah = surahSelect.value;
-                    ayahContainer.innerHTML = '';
-                    mainAudio.src = "";
 
-                    const selectedSurahData = data.data.surahs.find(surah => surah.number == selectedSurah);
-                    if (!selectedSurahData) return;
+        incrementBtn.addEventListener('click', () => {
+            count++;
+            counterDisplay.textContent = count;
+            updateStoneDisplay();
+            incrementSound.play();
+        });
 
-                    let audioElements = [];
+        decrementBtn.addEventListener('click', () => {
+            if (count > 0) {
+                count--;
+                counterDisplay.textContent = count;
+                if (stoneContainer.children.length > 0) {
+                    stoneContainer.removeChild(stoneContainer.lastElementChild);
+                }
+                decrementSound.play();
+            }
+        });
 
-                    selectedSurahData.ayahs.forEach((ayah, index) => {
-                        const ayahDiv = document.createElement('div');
-                        ayahDiv.classList.add('ayahDiv');
+        resetBtn.addEventListener('click', () => {
+            count = 0;
+            counterDisplay.textContent = count;
+            updateStoneDisplay();
+        });
 
-                        ayahDiv.innerHTML = `
-                            <p>${ayah.text}</p>
-                        `;
-                        ayahContainer.appendChild(ayahDiv);
-
-                        const audioElement = new Audio(ayah.audio);
-                        audioElements.push(audioElement);
-
-                        ayahDiv.addEventListener('click', () => {
-                            playAyah(index);
-                        });
-                    });
-
-                    function playAyah(index) {
-                        if (index < audioElements.length) {
-                            mainAudio.src = audioElements[index].src;
-                            mainAudio.play();
-
-                            const allAyahDivs = ayahContainer.querySelectorAll('.ayahDiv');
-                            allAyahDivs.forEach(div => div.classList.remove('playing'));
-                            allAyahDivs[index].classList.add('playing');
-
-                            mainAudio.addEventListener('ended', function onEnded() {
-                                mainAudio.removeEventListener('ended', onEnded);
-                                // If you want continuous playback, uncomment the next line:
-                                // playAyah(index + 1); 
-                            });
-                        }
-                    }
-                });
-            });
+        updateStoneDisplay();
     </script>
 </body>
 </html>
