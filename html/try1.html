@@ -4,51 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random Hadith Generator</title>
+    <link rel="stylesheet" href="../css/nabvar.css">
     <style>
-        /* Reset and Basic Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        /* Navbar Styling */
-        .navbar {
-            background-color: #2c3e50;
+       
+        /* Global Styling */
+        .sidebar {
+            background-color: #383636;
             padding: 15px;
-            text-align: center;
+            width: 200px; /* Fixed width for the navbar */
+            height: 100vh; /* Full height */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            right: 0; /* Align to the right */
+            top: 100px;
+            
         }
 
-        .navbar ul {
+        .sidebar ul {
             list-style: none;
-            display: flex;
-            justify-content: center;
             padding: 0;
         }
 
-        .navbar ul li {
-            margin: 0 15px;
+        .sidebar ul li {
+            margin: 15px 0;
         }
 
-        .navbar ul li a {
+        .sidebar ul li a {
             color: white;
             text-decoration: none;
             font-size: 18px;
             padding: 10px 20px;
-            display: inline-block;
+            display: block;
             border-radius: 5px;
+            text-align: center;
             transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
-        .navbar ul li a:hover {
+        .sidebar ul li a:hover {
             background-color: #007BFF;
             transform: translateY(-3px);
         }
@@ -59,6 +51,8 @@
             padding: 30px;
             max-width: 800px;
             margin: 0 auto;
+            flex-grow: 1; /* Allow the container to take up remaining space */
+            margin-right: 220px; /* Add margin to avoid overlap with the navbar */
         }
 
         header h1 {
@@ -146,15 +140,18 @@
 
         /* Mobile Responsive */
         @media screen and (max-width: 768px) {
-            .navbar ul {
+            body {
                 flex-direction: column;
             }
 
-            .navbar ul li {
-                margin: 10px 0;
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
             }
 
             .container {
+                margin-right: 0;
                 padding: 20px;
             }
 
@@ -170,8 +167,35 @@
 </head>
 <body>
 
+    <!-- Header Section -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="../images/logoo.png" alt="Media Logo" class="logo-image">
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="./index.html">মূলপাতা</a></li>
+                <li><a href="./html/media.html">মিডিয়া</a></li>
+                <li><a href="./html/category.html">ক্যাটাগরিসমূহ</a></li>
+                <li><a href="#blogs">দেয়াল চিত্র</a></li>
+                <!-- <li><a href="#contact">ইতিহাস</a></li> -->
+                <li><a href="#contact">বিয়ে</a></li>
+                <li><a href="./html/prayerTime.html">নামাজের সময়</a></li>
+                <li><a href="./html/calendar.html">ক্যালেন্ডার</a></li>
+                <li><a href="./html/user_blog_submission.html">লেখালিখি</a></li>
+                
+            </ul>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search...">
+                <button id="search-btn">Search</button>
+            </div>
+        </nav>
+    </header>
+
     <!-- Navbar -->
-    <div class="navbar">
+    <div class="sidebar">
         <ul>
             <li><a href="#" id="bukhari-link">Bukhari</a></li>
             <li><a href="#" id="muslim-link">Muslim</a></li>
