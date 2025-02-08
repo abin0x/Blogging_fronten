@@ -1,154 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quran Audio Player</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-            margin: 0;
-        }
-        .container {
-            text-align: center;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
-        }
-        input[type="text"] {
-            padding: 8px;
-            margin-bottom: 10px;
-            width: 200px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
+        /* ... (your CSS styles) ... */
         audio {
-            margin-top: 20px;
-            width: 100%;
-            max-width: 300px;
-        }
-        .ayah-text {
-            font-size: 24px;
-            margin-top: 20px;
-            font-family: 'Traditional Arabic', sans-serif;
-        }
-        .translation {
-            font-size: 18px;
-            margin-top: 10px;
-            font-family: 'Arial', sans-serif;
-            color: #555;
-        }
-        .translations-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-        }
-        .translation-item {
-            margin-top: 10px;
-            font-size: 18px;
-            color: #555;
+            margin-top: 10px; /* Add some spacing above the audio player */
+            width: 100%; /* Make the audio player responsive */
+            max-width: 400px; /* Set a maximum width if needed */
         }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h1>Quran Audio Player</h1>
-        <label for="ayahNumberInput">Enter Ayah Number (e.g., 2:255):</label><br>
-        <input type="text" id="ayahNumberInput" placeholder="e.g., 2:255">
-        <br>
-        <button onclick="getSpecificAyah()">Get Audio</button>
+        <h1>📖 Random Ayah Generator</h1>
+        <div class="search-container">
+            <input type="number" id="ayahNumberInput" placeholder="Enter Ayah number" min="1" max="6236">
+            <button onclick="getSpecificAyah()">🔍 Search Ayah</button>
+        </div>
+        <button onclick="getRandomAyah()">🔄 নতুন আয়াত দেখুন</button>
 
-        <h2>Audio Player:</h2>
+        <div class="ayah" id="ayah"></div>
+
         <audio id="ayahAudio" controls>
             Your browser does not support the audio element.
         </audio>
-
-        <div id="ayahText" class="ayah-text"></div>
-        <div id="translationsContainer" class="translations-container">
-            <div id="englishTranslation" class="translation-item"></div>
-            <div id="banglaTranslation" class="translation-item"></div>
-        </div>
     </div>
 
     <script>
-        function getSpecificAyah() {
-            const ayahNumber = document.getElementById("ayahNumberInput").value.trim();
+        function getRandomAyah() {
+            const randomAyahNumber = Math.floor(Math.random() * 6236) + 1;
+            getAyahData(randomAyahNumber);
+        }
 
-            if (!ayahNumber) {
-                alert("Please enter a valid Ayah number.");
+        function getSpecificAyah() {
+            const ayahNumber = document.getElementById("ayahNumberInput").value;
+            if (!ayahNumber || ayahNumber < 1 || ayahNumber > 6236) {
+                document.getElementById("ayah").innerHTML = "❌ Invalid Ayah number, please enter a number between 1 and 6236.";
                 return;
             }
+            getAyahData(ayahNumber);
+        }
 
-            // Define the API URLs
-            const audioUrl = `https://api.alquran.cloud/v1/ayah/${ayahNumber}/ar.alafasy`; // Audio API
-            const englishTranslationUrl = `https://api.alquran.cloud/v1/ayah/${ayahNumber}/en.asad`; // English Translation API
-            const banglaTranslationUrl = `http://api.alquran.cloud/v1/ayah/${ayahNumber}/editions/bn.bengali`; // Bangla Translation API
-            const audioElement = document.getElementById("ayahAudio");
-            const ayahTextElement = document.getElementById("ayahText");
-            const englishTranslationElement = document.getElementById("englishTranslation");
-            const banglaTranslationElement = document.getElementById("banglaTranslation");
+        function getAyahData(ayahNumber) {
+            const apiUrl = `https://api.alquran.cloud/v1/ayah/${ayahNumber}`;
+            const audioUrl = `https://api.alquran.cloud/v1/ayah/${ayahNumber}/ar.alafasy`; // Audio URL
 
-            // Clear previous content
-            ayahTextElement.textContent = '';
-            englishTranslationElement.textContent = '';
-            banglaTranslationElement.textContent = '';
-
-            // Fetch the audio and translation data from the APIs
             Promise.all([
-                fetch(audioUrl),
-                fetch(englishTranslationUrl),
-                fetch(banglaTranslationUrl)
+                fetch(apiUrl).then(response => response.json()),
+                fetch(audioUrl).then(response => response.json()) // Fetch audio data
             ])
-            .then(responses => Promise.all(responses.map(response => response.json())))
-            .then(([audioData, englishData, banglaData]) => {
-                if (audioData.code === 200 && audioData.data.audio) {
-                    // Set the audio source and play
-                    audioElement.src = audioData.data.audio;
-                    audioElement.play();
+            .then(([ayahData, audioData]) => {
+                if (ayahData.data && audioData.data && audioData.data.audio) { // Check if both ayah and audio data are available
+                    const arabicText = ayahData.data.text;
+                    const surahName = ayahData.data.surah.englishName;
+                    const ayahNumber = ayahData.data.number;
 
-                    // Display the Arabic Ayah
-                    ayahTextElement.textContent = audioData.data.text;
+                    const englishTranslationUrl = `https://api.alquran.cloud/v1/ayah/${ayahNumber}/editions/quran-uthmani,en.asad`;
+                    const banglaTranslationUrl = `https://api.alquran.cloud/v1/ayah/${ayahNumber}/editions/bn.bengali`;
 
-                    // Display the English translation
-                    if (englishData.code === 200) {
-                        englishTranslationElement.textContent = "📖 English: " + englishData.data.text;
-                    } else {
-                        englishTranslationElement.textContent = "English Translation not available.";
-                    }
+                    Promise.all([
+                        fetch(englishTranslationUrl).then(response => response.json()),
+                        fetch(banglaTranslationUrl).then(response => response.json())
+                    ])
+                    .then(([englishData, banglaData]) => {
+                        const englishTranslation = englishData.data[1].text;
+                        const banglaTranslation = banglaData.data[0].text;
 
-                    // Display the Bangla translation
-                    if (banglaData.code === 200) {
-                        banglaTranslationElement.textContent = "🌿 বাংলা: " + banglaData.data[0].text;
-                    } else {
-                        banglaTranslationElement.textContent = "বাংলা অনুবাদ উপলব্ধ নয়।";
-                    }
+                        document.getElementById("ayah").innerHTML = `
+                            <p><strong>📜 Arabic:</strong> ${arabicText}</p>
+                            <p><strong>📖 English:</strong> ${englishTranslation}</p>
+                            <p><strong>🌿 বাংলা:</strong> ${banglaTranslation}</p>
+                            <div class="metadata">
+                                <p><strong>Surah:</strong> ${surahName}</p>
+                                <p><strong>Ayah Number:</strong> ${ayahNumber}</p>
+                            </div>
+                        `;
+
+                        // Set and play the audio
+                        const audioElement = document.getElementById("ayahAudio");
+                        audioElement.src = audioData.data.audio;
+                        audioElement.play();
+
+                    })
+                    .catch(error => {
+                        console.error("Error fetching translations:", error);
+                        document.getElementById("ayah").innerHTML += "<p>❌ Error loading translations.</p>";
+                    });
+
                 } else {
-                    alert('Audio not found for the entered Ayah.');
+                    document.getElementById("ayah").innerHTML = "❌ আয়াত বা অডিও লোড করা যায়নি, আবার চেষ্টা করুন।";
                 }
             })
             .catch(error => {
-                console.error('Error fetching audio and translation:', error);
-                alert('Failed to fetch the audio or translation. Please try again later.');
+                console.error("Error fetching Ayah or Audio:", error);
+                document.getElementById("ayah").innerHTML = "❌ আয়াত বা অডিও লোড করা যায়নি, আবার চেষ্টা করুন।";
             });
         }
     </script>

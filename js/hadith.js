@@ -1,130 +1,69 @@
 function getRandomAyah() {
     const randomAyahNumber = Math.floor(Math.random() * 6236) + 1;
-    const apiUrl = `http://api.alquran.cloud/v1/ayah/${randomAyahNumber}`;
-
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            if (data.data) {
-                const arabicText = data.data.text;
-                const surahName = data.data.surah.englishName;
-                const ayahNumber = data.data.number;
-
-                // Get translation for English
-                const englishTranslationUrl = `http://api.alquran.cloud/v1/ayah/${randomAyahNumber}/editions/quran-uthmani,en.asad`;
-                fetch(englishTranslationUrl)
-                    .then(response => response.json())
-                    .then(englishData => {
-                        const englishTranslation = englishData.data[1].text; // English translation
-
-                        // Get translation for Bangla
-                        const banglaTranslationUrl = `http://api.alquran.cloud/v1/ayah/${randomAyahNumber}/editions/bn.bengali`;
-                        fetch(banglaTranslationUrl)
-                            .then(response => response.json())
-                            .then(banglaData => {
-                                const banglaTranslation = banglaData.data[0].text; // Bangla translation
-
-                                // Display the Ayah and its metadata
-                                document.getElementById("ayah").innerHTML = `
-                                    <p><strong>📜 Arabic:</strong> ${arabicText}</p>
-                                    <p><strong>📖 English:</strong> ${englishTranslation}</p>
-                                    <p><strong>🌿 বাংলা:</strong> ${banglaTranslation}</p>
-                                    <div class="metadata">
-                                        <p><strong>Surah:</strong> ${surahName}</p>
-                                        <p><strong>Ayah Number:</strong> ${ayahNumber}</p>
-                                    </div>
-                                `;
-
-                                // Get audio for the Ayah
-                                const audioUrl = `http://api.alquran.cloud/v1/ayah/${randomAyahNumber}/audio/ar.abdulsamadturki`;
-                                document.getElementById("audioSource").src = audioUrl;
-                                document.getElementById("ayahAudio").load();
-                                document.getElementById("audioPlayer").style.display = "block"; // Show audio player
-                            })
-                            .catch(error => {
-                                console.error("Error fetching Bangla Translation:", error);
-                                document.getElementById("ayah").innerHTML = "❌ বাংলা অনুবাদ লোড করা যায়নি, আবার চেষ্টা করুন।";
-                            });
-                    })
-                    .catch(error => {
-                        console.error("Error fetching English Translation:", error);
-                        document.getElementById("ayah").innerHTML = "❌ ইংরেজি অনুবাদ লোড করা যায়নি, আবার চেষ্টা করুন।";
-                    });
-            } else {
-                document.getElementById("ayah").innerHTML = "❌ আয়াত লোড করা যায়নি, আবার চেষ্টা করুন।";
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching Ayah:", error);
-            document.getElementById("ayah").innerHTML = "❌ আয়াত লোড করা যায়নি, আবার চেষ্টা করুন।";
-        });
+    getAyahData(randomAyahNumber);
 }
 
 function getSpecificAyah() {
     const ayahNumber = document.getElementById("ayahNumberInput").value;
-
-    // Check if the input is valid
     if (!ayahNumber || ayahNumber < 1 || ayahNumber > 6236) {
         document.getElementById("ayah").innerHTML = "❌ Invalid Ayah number, please enter a number between 1 and 6236.";
         return;
     }
+    getAyahData(ayahNumber);
+}
 
-    const apiUrl = `http://api.alquran.cloud/v1/ayah/${ayahNumber}`;
+function getAyahData(ayahNumber) {
+    const apiUrl = `https://api.alquran.cloud/v1/ayah/${ayahNumber}`;
+    const audioUrl = `https://api.alquran.cloud/v1/ayah/${ayahNumber}/ar.alafasy`; // Audio URL
 
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            if (data.data) {
-                const arabicText = data.data.text;
-                const surahName = data.data.surah.englishName;
-                const ayahNumber = data.data.number;
+    Promise.all([
+        fetch(apiUrl).then(response => response.json()),
+        fetch(audioUrl).then(response => response.json()) // Fetch audio data
+    ])
+    .then(([ayahData, audioData]) => {
+        if (ayahData.data && audioData.data && audioData.data.audio) { // Check if both ayah and audio data are available
+            const arabicText = ayahData.data.text;
+            const surahName = ayahData.data.surah.englishName;
+            const ayahNumber = ayahData.data.number;
 
-                // Get translation for English
-                const englishTranslationUrl = `http://api.alquran.cloud/v1/ayah/${ayahNumber}/editions/quran-uthmani,en.asad`;
-                fetch(englishTranslationUrl)
-                    .then(response => response.json())
-                    .then(englishData => {
-                        const englishTranslation = englishData.data[1].text; // English translation
+            const englishTranslationUrl = `https://api.alquran.cloud/v1/ayah/${ayahNumber}/editions/quran-uthmani,en.asad`;
+            const banglaTranslationUrl = `https://api.alquran.cloud/v1/ayah/${ayahNumber}/editions/bn.bengali`;
 
-                        // Get translation for Bangla
-                        const banglaTranslationUrl = `http://api.alquran.cloud/v1/ayah/${ayahNumber}/editions/bn.bengali`;
-                        fetch(banglaTranslationUrl)
-                            .then(response => response.json())
-                            .then(banglaData => {
-                                const banglaTranslation = banglaData.data[0].text; // Bangla translation
+            Promise.all([
+                fetch(englishTranslationUrl).then(response => response.json()),
+                fetch(banglaTranslationUrl).then(response => response.json())
+            ])
+            .then(([englishData, banglaData]) => {
+                const englishTranslation = englishData.data[1].text;
+                const banglaTranslation = banglaData.data[0].text;
 
-                                // Display the Ayah and its metadata
-                                document.getElementById("ayah").innerHTML = `
-                                    <p><strong>📜 Arabic:</strong> ${arabicText}</p>
-                                    <p><strong>📖 English:</strong> ${englishTranslation}</p>
-                                    <p><strong>🌿 বাংলা:</strong> ${banglaTranslation}</p>
-                                    <div class="metadata">
-                                        <p><strong>Surah:</strong> ${surahName}</p>
-                                        <p><strong>Ayah Number:</strong> ${ayahNumber}</p>
-                                    </div>
-                                `;
+                document.getElementById("ayah").innerHTML = `
+                    <p><strong>📜 Arabic:</strong> ${arabicText}</p>
+                    <p><strong>📖 English:</strong> ${englishTranslation}</p>
+                    <p><strong>🌿 বাংলা:</strong> ${banglaTranslation}</p>
+                    <div class="metadata">
+                        <p><strong>Surah:</strong> ${surahName}</p>
+                        <p><strong>Ayah Number:</strong> ${ayahNumber}</p>
+                    </div>
+                `;
 
-                                // Get audio for the Ayah
-                                const audioUrl = `http://api.alquran.cloud/v1/ayah/${ayahNumber}/audio/ar.abdulsamadturki`;
-                                document.getElementById("audioSource").src = audioUrl;
-                                document.getElementById("ayahAudio").load();
-                                document.getElementById("audioPlayer").style.display = "block"; // Show audio player
-                            })
-                            .catch(error => {
-                                console.error("Error fetching Bangla Translation:", error);
-                                document.getElementById("ayah").innerHTML = "❌ বাংলা অনুবাদ লোড করা যায়নি, আবার চেষ্টা করুন।";
-                            });
-                    })
-                    .catch(error => {
-                        console.error("Error fetching English Translation:", error);
-                        document.getElementById("ayah").innerHTML = "❌ ইংরেজি অনুবাদ লোড করা যায়নি, আবার চেষ্টা করুন।";
-                    });
-            } else {
-                document.getElementById("ayah").innerHTML = "❌ আয়াত লোড করা যায়নি, আবার চেষ্টা করুন।";
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching Ayah:", error);
-            document.getElementById("ayah").innerHTML = "❌ আয়াত লোড করা যায়নি, আবার চেষ্টা করুন।";
-        });
+                // Set and play the audio
+                const audioElement = document.getElementById("ayahAudio");
+                audioElement.src = audioData.data.audio;
+                audioElement.play();
+
+            })
+            .catch(error => {
+                console.error("Error fetching translations:", error);
+                document.getElementById("ayah").innerHTML += "<p>❌ Error loading translations.</p>";
+            });
+
+        } else {
+            document.getElementById("ayah").innerHTML = "❌ আয়াত বা অডিও লোড করা যায়নি, আবার চেষ্টা করুন।";
+        }
+    })
+    .catch(error => {
+        console.error("Error fetching Ayah or Audio:", error);
+        document.getElementById("ayah").innerHTML = "❌ আয়াত বা অডিও লোড করা যায়নি, আবার চেষ্টা করুন।";
+    });
 }
