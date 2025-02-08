@@ -3,327 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>তাসবিহ কাউন্টার</title>
+    <title>যাকাত ক্যালকুলেটর</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Electrolize&display=swap">
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #e0f7fa;
             margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
         }
 
         .container {
+            width: 80%;
+            max-width: 960px;
+            margin: 20px auto;
+            padding: 30px;
             background-color: #fff;
-            padding: 40px;
-            border-radius: 25px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
-            color: #37474f;
-            margin-bottom: 10px;
-            font-size: 2.8em;
-            text-shadow: 2px 2px 3px rgba(0,0,0,0.1);
-        }
-
-        #target-input-area {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        #target-input-area label {
-            margin-right: 10px;
-            color: #455a64;
-            font-size: 1.1em;
-        }
-
-        #target-count {
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: 1px solid #b0bec5;
-            font-size: 1em;
-            color: #455a64;
-            width: 80px;
             text-align: center;
-        }
-
-        #counter-display {
-            font-family: 'Electrolize', sans-serif;
-            font-size: 5em;
-            color: #263238;
-            padding: 15px 25px;
-            background-color: #eceff1;
-            border-radius: 15px;
-            box-shadow: inset 2px 2px 5px #b0bec5,
-                        3px 3px 8px rgba(0,0,0,0.2);
+            color: #28a745;
             margin-bottom: 25px;
-            text-align: center;
-            letter-spacing: 6px;
         }
 
-        #counter-area {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
+        .input-group {
             margin-bottom: 20px;
         }
 
-        #rope {
-            position: absolute;
-            height: 10px;
-            width: 100%;
-            background: #6d4c41;
-            border-radius: 5px;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-            z-index: 1;
-            box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        }
-
-        #stone-container {
-            display: flex;
-            width: 240px;
-            overflow: hidden;
-            margin-right: 20px;
-            z-index: 0;
-            position: relative;
-            justify-content: flex-start;
-            padding: 10px 0;
-        }
-
-        .stone {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            margin-right: 6px;
-            animation-duration: 0.5s;
-            animation-timing-function: ease-out;
-            position: relative;
-            box-shadow: 3px 3px 7px rgba(0,0,0,0.4),
-                        inset 1px 1px 2px rgba(255,255,255,0.2);
-            background-image: radial-gradient(circle at 30% 30%, #a1887f, #5d4037);
-            border: 2px solid #4e342e;
-        }
-
-        .stone:last-child {
-            margin-right: 0;
-        }
-
-
-        #congrats-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.5);
-            background-color: #ffeb3b; /* Amber for congratulations */
-            color: #2e7d32; /* Dark green for text */
-            padding: 30px 40px;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
-            font-size: 2.2em;
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
             font-weight: bold;
-            opacity: 0;
-            visibility: hidden;
-            transition: transform 0.4s ease-out, opacity 0.3s ease-in-out, visibility 0s linear 0.4s; /* Delay visibility hide */
-            z-index: 10;
+            color: #555;
         }
 
-        #congrats-message.show {
-            visibility: visible;
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-            transition: transform 0.4s ease-out, opacity 0.3s ease-in-out, visibility 0s linear 0s; /* No delay for visibility show */
+        .input-group input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1em;
         }
 
-        .controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-top: 10px;
+        .input-group input[type="number"]:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+            outline: none;
         }
 
-        .controls button {
-            padding: 14px 30px;
+        .calculate-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
             border: none;
-            border-radius: 10px;
-            background-color: #43a047;
+            border-radius: 5px;
+            background-color: #28a745;
             color: white;
             font-size: 1.1em;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 3px 3px 7px rgba(0,0,0,0.25);
+            transition: background-color 0.3s ease;
         }
 
-        .controls button.decrement {
-            background-color: #e53935;
+        .calculate-button:hover {
+            background-color: #218838;
         }
 
-        .controls button#reset-btn {
-            background-color: #fdd835;
-            color: #424242;
+        #result-area {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            text-align: center;
         }
 
-        .controls button:hover {
-            opacity: 0.9;
-            transform: scale(1.05);
+        #result-area h2 {
+            color: #28a745;
+            margin-top: 0;
         }
 
-        .controls button:active {
-            transform: scale(1.0);
+        #zakat-amount {
+            font-size: 2em;
+            color: #d35400;
+            font-weight: bold;
         }
 
-        .icon {
-            height: 1.2em;
-            width: 1.2em;
-            fill: white;
-        }
-
-        .controls button#reset-btn .icon {
-            fill: #424242;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .animate-increment {
-            animation-name: slideInRight;
-            animation-duration: 0.4s;
-            animation-timing-function: ease-out;
+        .disclaimer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #777;
+            text-align: center;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>তাসবিহ কাউন্টার</h1>
-        <div id="target-input-area">
-            <label for="target-count">Target Count:</label>
-            <input type="number" id="target-count" value="33">
+        <h1>যাকাত ক্যালকুলেটর</h1>
+
+        <div class="input-group">
+            <label for="cash-input">নগদ টাকা (ব্যাংক এবং হাতে) :</label>
+            <input type="number" id="cash-input" placeholder="টাকা লিখুন">
         </div>
-        <div id="counter-display">0</div>
-        <div id="counter-area">
-            <div id="rope"></div>
-            <div id="stone-container">
-            </div>
+
+        <div class="input-group">
+            <label for="gold-input">স্বর্ণ (ভরি):</label>
+            <input type="number" id="gold-input" placeholder="ভরি লিখুন">
         </div>
-        <div id="congrats-message">Congratulations!</div>
-        <div class="controls">
-            <button class="decrement" id="decrement-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
-                    <path fill-rule="evenodd" d="M3.75 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H4.5a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
-                </svg>
-                Decrement
-            </button>
-            <button id="reset-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
-                    <path d="M4.913 1.036a.75.75 0 00-.902.902L7.728 5H2.25a.75.75 0 000 1.5h4.304l-6.64 6.64a.75.75 0 001.06 1.06l6.64-6.64v4.304a.75.75 0 001.5 0V5.272l3.063 3.063a.75.75 0 001.06-1.06L8.728 2.939l2.39 2.39a.75.75 0 001.06-1.06L9.728 1.939a.75.75 0 00-1.06 0l-3.75 3.75V1.75a.75.75 0 00-1.5 0V5H4.272l-3.236-3.236a.75.75 0 00.001-1.06zM18.964 9.236a.75.75 0 001.06 0l3.75-3.75V22.25a.75.75 0 001.5 0V19h4.272l3.236 3.236a.75.75 0 00-.001 1.06l-.902.902L16.272 19h5.478a.75.75 0 000-1.5h-5.478l6.64-6.64a.75.75 0 00-1.06-1.06l-6.64 6.64v-4.304a.75.75 0 00-1.5 0v4.728l-3.063-3.063a.75.75 0 00-1.06 1.06l2.39 2.39-2.39 2.39a.75.75 0 00-1.06 1.06l.902.902a.75.75 0 00.902-.902l3.75-3.75V9.75a.75.75 0 001.5 0v-3.5h4.728l3.236 3.236a.75.75 0 00-.001 1.06z" />
-                </svg>
-                Reset
-            </button>
-            <button id="increment-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
-                    <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />
-                </svg>
-                Increment
-            </button>
+
+        <div class="input-group">
+            <label for="silver-input">রূপা (ভরি):</label>
+            <input type="number" id="silver-input" placeholder="ভরি লিখুন">
         </div>
+
+        <div class="input-group">
+            <label for="investments-input">বিনিয়োগ (যেমন - ফিক্সড ডিপোজিট, শেয়ার):</label>
+            <input type="number" id="investments-input" placeholder="টাকা লিখুন">
+        </div>
+
+        <div class="input-group">
+            <label for="loan-receivable-input">ঋণ যা ফেরত পাওয়ার যোগ্য:</label>
+            <input type="number" id="loan-receivable-input" placeholder="টাকা লিখুন">
+        </div>
+
+        <button class="calculate-button" onclick="calculateZakat()">যাকাত হিসাব করুন</button>
+
+        <div id="result-area" style="display:none;">
+            <h2>আপনার যাকাতের পরিমাণ</h2>
+            <p id="zakat-amount"></p>
+        </div>
+
+        <p class="disclaimer">দয়া করে মনে রাখবেন, এই ক্যালকুলেটরটি শুধুমাত্র একটি আনুমানিক হিসাব। সঠিক যাকাত জানার জন্য একজন ইসলামিক স্কলারের সাথে পরামর্শ করুন।</p>
     </div>
+
     <script>
-        let count = 0;
-        const counterDisplay = document.getElementById('counter-display');
-        const incrementBtn = document.getElementById('increment-btn');
-        const decrementBtn = document.getElementById('decrement-btn');
-        const resetBtn = document.getElementById('reset-btn');
-        const stoneContainer = document.getElementById('stone-container');
-        const targetCountInput = document.getElementById('target-count');
-        const congratsMessage = document.getElementById('congrats-message');
+        function calculateZakat() {
+            const cash = parseFloat(document.getElementById('cash-input').value) || 0;
+            const goldInVori = parseFloat(document.getElementById('gold-input').value) || 0;
+            const silverInVori = parseFloat(document.getElementById('silver-input').value) || 0;
+            const investments = parseFloat(document.getElementById('investments-input').value) || 0;
+            const loanReceivable = parseFloat(document.getElementById('loan-receivable-input').value) || 0;
 
-        // Sound effects
-        const incrementSound = new Audio('https://myislam.sfo3.digitaloceanspaces.com/assets/2024/11/BeadsDrop.mp3');
-        const decrementSound = new Audio('https://myislam.sfo3.digitaloceanspaces.com/assets/2024/11/BeadsDrop.mp3');
+            // Current approximate value of 1 vori gold and silver (adjust as needed)
+            const goldValuePerVori = 120000; // Example: 85000 BDT per vori gold
+            const silverValuePerVori = 2100;  // Example: 1200 BDT per vori silver
+            const nisabGoldInVori = 85; // Nisab for gold is approximately 85 grams (adjust vori if needed)
+            const nisabSilverInVori = 595; // Nisab for silver is approximately 595 grams (adjust vori if needed)
 
-        // Function to create a stone element
-        function createStone() {
-            const stone = document.createElement('div');
-            stone.classList.add('stone');
-            return stone;
+
+            const totalGoldValue = goldInVori * goldValuePerVori;
+            const totalSilverValue = silverInVori * silverValuePerVori;
+            let totalWealth = cash + totalGoldValue + totalSilverValue + investments + loanReceivable;
+
+
+            //Nisab value calculation (using gold standard for simplicity in this example)
+            const nisabValue = nisabGoldInVori * goldValuePerVori;
+
+
+            let zakatAmount = 0;
+            if (totalWealth >= nisabValue) {
+                zakatAmount = totalWealth * 0.025; // 2.5% zakat
+            }
+
+            const resultArea = document.getElementById('result-area');
+            const zakatAmountDisplay = document.getElementById('zakat-amount');
+
+            zakatAmountDisplay.textContent =  '৳ ' + zakatAmount.toFixed(2);
+            resultArea.style.display = 'block'; // Show the result area
         }
-
-        // Function to update the stone display
-        function updateStoneDisplay() {
-            stoneContainer.innerHTML = '';
-            for (let i = 0; i < count; i++) {
-                const stone = createStone();
-                stoneContainer.appendChild(stone);
-            }
-            if (stoneContainer.children.length > 0) {
-                stoneContainer.lastElementChild.classList.add('animate-increment');
-                stoneContainer.lastElementChild.addEventListener('animationend', () => {
-                    stoneContainer.lastElementChild.classList.remove('animate-increment');
-                });
-            }
-        }
-
-        function checkTarget() {
-            const target = parseInt(targetCountInput.value);
-            if (!isNaN(target) && count >= target) {
-                congratsMessage.classList.add('show');
-            } else {
-                congratsMessage.classList.remove('show');
-            }
-        }
-
-
-        incrementBtn.addEventListener('click', () => {
-            count++;
-            counterDisplay.textContent = count;
-            updateStoneDisplay();
-            incrementSound.play();
-            checkTarget(); // Check target on increment
-        });
-
-        decrementBtn.addEventListener('click', () => {
-            if (count > 0) {
-                count--;
-                counterDisplay.textContent = count;
-                if (stoneContainer.children.length > 0) {
-                    stoneContainer.removeChild(stoneContainer.lastElementChild);
-                }
-                decrementSound.play();
-                checkTarget(); // Check target on decrement
-            }
-        });
-
-        resetBtn.addEventListener('click', () => {
-            count = 0;
-            counterDisplay.textContent = count;
-            updateStoneDisplay();
-            congratsMessage.classList.remove('show'); // Hide congrats on reset
-        });
-
-        updateStoneDisplay();
     </script>
 </body>
 </html>
