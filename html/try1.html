@@ -2,38 +2,118 @@
 <html>
 <head>
     <title>Quran Reader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /*... (styles from previous response)... */
-        #ayahContainer {
-            /*... (grid styles from previous response)... */
-            counter-reset: ayah-counter; /* Initialize ayah counter */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
         }
-      .ayahDiv {
-            /*... (ayah div styles from previous response)... */
-            position: relative; /* For positioning the ayah number */
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex-grow: 1;
         }
-      .ayahDiv::before { /* Add ayah number before the text */
-            content: counter(ayah-counter) ".";
-            counter-increment: ayah-counter; /* Increment counter */
-            position: absolute;
-            top: 10px;
-            left: 10px;
+
+        h1 {
+            font-family: 'Amiri', serif;
+            color: #3498db;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #surahSelect {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
             font-size: 16px;
+            appearance: none;
+            background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath fill='rgba(52, 152, 219, 1)' d='M7 10l5 5 5-5z'/%3e%3c/svg%3e") no-repeat right 10px center;
+            padding-right: 30px;
+        }
+
+        #ayahContainer {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            counter-reset: ayah-counter;
+        }
+
+        .ayahDiv {
+            border: 1px solid #eee;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            position: relative;
+            text-align: center;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            overflow: hidden;
+            cursor: pointer; /* Make ayahDiv clickable */
+        }
+
+        .ayahDiv:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .ayahDiv::before {
+            content: counter(ayah-counter) ".";
+            counter-increment: ayah-counter;
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 18px;
             color: #777;
         }
 
-        /* Style for the audio controls at the bottom */
-        #audio-controls {
-            margin-top: 20px;
-            text-align: center; /* Center the controls */
-        }
-        #main-audio {
-            width: 80%; /* Adjust width as needed */
-            max-width: 600px;
+        .ayahDiv p {
+            font-size: 22px;
+            font-family: 'Amiri', serif;
+            direction: rtl;
+            margin-bottom: 15px;
+            color: #2c3e50;
         }
 
-      .playing { /* Style for the currently playing ayah */
-            background-color: #e0f2f7; /* Light blue highlight */
+        #audio-controls {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        #main-audio {
+            width: 80%;
+            max-width: 600px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .playing {
+            background-color: #e0f2f7;
+        }
+
+        @media (max-width: 768px) {
+            #ayahContainer {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -44,32 +124,38 @@
             <option value="">Select a Surah</option>
         </select>
         <div id="ayahContainer"></div>
-
         <div id="audio-controls">
             <audio id="main-audio" controls></audio>
         </div>
-
     </div>
+    <footer>
+        &copy; 2024 Quran Reader. All rights reserved.
+    </footer>
 
     <script>
         const surahSelect = document.getElementById('surahSelect');
         const ayahContainer = document.getElementById('ayahContainer');
-        const mainAudio = document.getElementById('main-audio'); // Get the main audio element
+        const mainAudio = document.getElementById('main-audio');
 
         fetch('https://api.alquran.cloud/v1/quran/ar.alafasy')
-          .then(response => response.json())
-          .then(data => {
-                //... (Surah select population from previous response)...
+            .then(response => response.json())
+            .then(data => {
+                data.data.surahs.forEach(surah => {
+                    const option = document.createElement('option');
+                    option.value = surah.number;
+                    option.text = surah.name + " (" + surah.englishName + ")";
+                    surahSelect.appendChild(option);
+                });
 
                 surahSelect.addEventListener('change', () => {
                     const selectedSurah = surahSelect.value;
                     ayahContainer.innerHTML = '';
-                    mainAudio.src = ""; // Clear main audio source
+                    mainAudio.src = "";
 
                     const selectedSurahData = data.data.surahs.find(surah => surah.number == selectedSurah);
-                    if (!selectedSurahData) return; // Handle if surah data is not found.
+                    if (!selectedSurahData) return;
 
-                    let currentAyahIndex = 0; // Keep track of the current ayah
+                    let audioElements = [];
 
                     selectedSurahData.ayahs.forEach((ayah, index) => {
                         const ayahDiv = document.createElement('div');
@@ -80,28 +166,29 @@
                         `;
                         ayahContainer.appendChild(ayahDiv);
 
-                        if (index === 0) { // Play the first ayah automatically
-                            playAyah(ayah, ayahDiv);
-                        }
+                        const audioElement = new Audio(ayah.audio);
+                        audioElements.push(audioElement);
+
+                        ayahDiv.addEventListener('click', () => {
+                            playAyah(index);
+                        });
                     });
 
-                    function playAyah(ayah, ayahDiv) {
-                        mainAudio.src = ayah.audio;
-                        mainAudio.play();
+                    function playAyah(index) {
+                        if (index < audioElements.length) {
+                            mainAudio.src = audioElements[index].src;
+                            mainAudio.play();
 
-                        // Highlight the currently playing ayah
-                        const allAyahDivs = ayahContainer.querySelectorAll('.ayahDiv');
-                        allAyahDivs.forEach(div => div.classList.remove('playing')); // Remove previous highlights
-                        ayahDiv.classList.add('playing'); // Highlight the current ayah
+                            const allAyahDivs = ayahContainer.querySelectorAll('.ayahDiv');
+                            allAyahDivs.forEach(div => div.classList.remove('playing'));
+                            allAyahDivs[index].classList.add('playing');
 
-                        mainAudio.addEventListener('ended', () => {
-                            currentAyahIndex++;
-                            if (currentAyahIndex < selectedSurahData.ayahs.length) {
-                                const nextAyah = selectedSurahData.ayahs[currentAyahIndex];
-                                const nextAyahDiv = ayahContainer.querySelectorAll('.ayahDiv')[currentAyahIndex];
-                                playAyah(nextAyah, nextAyahDiv);
-                            }
-                        });
+                            mainAudio.addEventListener('ended', function onEnded() {
+                                mainAudio.removeEventListener('ended', onEnded);
+                                // If you want continuous playback, uncomment the next line:
+                                // playAyah(index + 1); 
+                            });
+                        }
                     }
                 });
             });
