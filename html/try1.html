@@ -3,60 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Hadith Generator</title>
-    <link rel="stylesheet" href="../css/nabvar.css">
+    <title>Quran Audio Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            margin-bottom: 10px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        audio {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .ayah-text {
+            font-size: 24px;
+            margin-top: 20px;
+            font-family: 'Traditional Arabic', sans-serif;
+        }
+        .translation {
+            font-size: 18px;
+            margin-top: 10px;
+            font-family: 'Arial', sans-serif;
+            color: #555;
+        }
+        .translations-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .translation-item {
+            margin-top: 10px;
+            font-size: 18px;
+            color: #555;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Header Section -->
-    <header class="header">
-        <nav class="navbar">
-            <div class="logo">
-                <a href="index.html">
-                    <img src="../images/logoo.png" alt="Media Logo" class="logo-image">
-                </a>
-            </div>
-            <ul class="nav-links">
-                <li><a href="./index.html">মূলপাতা</a></li>
-                <li><a href="./html/media.html">মিডিয়া</a></li>
-                <li><a href="./html/category.html">ক্যাটাগরিসমূহ</a></li>
-                <li><a href="#blogs">দেয়াল চিত্র</a></li>
-                <!-- <li><a href="#contact">ইতিহাস</a></li> -->
-                <li><a href="#contact">বিয়ে</a></li>
-                <li><a href="./html/prayerTime.html">নামাজের সময়</a></li>
-                <li><a href="./html/calendar.html">ক্যালেন্ডার</a></li>
-                <li><a href="./html/user_blog_submission.html">লেখালিখি</a></li>
-                
-            </ul>
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="Search...">
-                <button id="search-btn">Search</button>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Navbar -->
-    <div class="sidebar">
-        <ul>
-            <li><a href="#" id="bukhari-link">Bukhari</a></li>
-            <li><a href="#" id="muslim-link">Muslim</a></li>
-            <li><a href="#" id="abudawud-link">Abu Dawud</a></li>
-            <li><a href="#" id="ibnmajah-link">Ibn Majah</a></li>
-            <li><a href="#" id="tirmidhi-link">Tirmidhi</a></li>
-        </ul>
-    </div>
-
-    <!-- Main Content -->
     <div class="container">
-        <header>
-            <h1>Random Hadith Generator</h1>
-        </header>
+        <h1>Quran Audio Player</h1>
+        <label for="ayahNumberInput">Enter Ayah Number (e.g., 2:255):</label><br>
+        <input type="text" id="ayahNumberInput" placeholder="e.g., 2:255">
+        <br>
+        <button onclick="getSpecificAyah()">Get Audio</button>
 
-        <div id="hadith-content" class="content">
-            <p>Select a Hadith book from the menu above to get a random Hadith.</p>
+        <h2>Audio Player:</h2>
+        <audio id="ayahAudio" controls>
+            Your browser does not support the audio element.
+        </audio>
+
+        <div id="ayahText" class="ayah-text"></div>
+        <div id="translationsContainer" class="translations-container">
+            <div id="englishTranslation" class="translation-item"></div>
+            <div id="banglaTranslation" class="translation-item"></div>
         </div>
-
-        <button id="fetch-button">Get Random Hadith</button>
     </div>
+
+    <script>
+        function getSpecificAyah() {
+            const ayahNumber = document.getElementById("ayahNumberInput").value.trim();
+
+            if (!ayahNumber) {
+                alert("Please enter a valid Ayah number.");
+                return;
+            }
+
+            // Define the API URLs
+            const audioUrl = `https://api.alquran.cloud/v1/ayah/${ayahNumber}/ar.alafasy`; // Audio API
+            const englishTranslationUrl = `https://api.alquran.cloud/v1/ayah/${ayahNumber}/en.asad`; // English Translation API
+            const banglaTranslationUrl = `http://api.alquran.cloud/v1/ayah/${ayahNumber}/editions/bn.bengali`; // Bangla Translation API
+            const audioElement = document.getElementById("ayahAudio");
+            const ayahTextElement = document.getElementById("ayahText");
+            const englishTranslationElement = document.getElementById("englishTranslation");
+            const banglaTranslationElement = document.getElementById("banglaTranslation");
+
+            // Clear previous content
+            ayahTextElement.textContent = '';
+            englishTranslationElement.textContent = '';
+            banglaTranslationElement.textContent = '';
+
+            // Fetch the audio and translation data from the APIs
+            Promise.all([
+                fetch(audioUrl),
+                fetch(englishTranslationUrl),
+                fetch(banglaTranslationUrl)
+            ])
+            .then(responses => Promise.all(responses.map(response => response.json())))
+            .then(([audioData, englishData, banglaData]) => {
+                if (audioData.code === 200 && audioData.data.audio) {
+                    // Set the audio source and play
+                    audioElement.src = audioData.data.audio;
+                    audioElement.play();
+
+                    // Display the Arabic Ayah
+                    ayahTextElement.textContent = audioData.data.text;
+
+                    // Display the English translation
+                    if (englishData.code === 200) {
+                        englishTranslationElement.textContent = "📖 English: " + englishData.data.text;
+                    } else {
+                        englishTranslationElement.textContent = "English Translation not available.";
+                    }
+
+                    // Display the Bangla translation
+                    if (banglaData.code === 200) {
+                        banglaTranslationElement.textContent = "🌿 বাংলা: " + banglaData.data[0].text;
+                    } else {
+                        banglaTranslationElement.textContent = "বাংলা অনুবাদ উপলব্ধ নয়।";
+                    }
+                } else {
+                    alert('Audio not found for the entered Ayah.');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching audio and translation:', error);
+                alert('Failed to fetch the audio or translation. Please try again later.');
+            });
+        }
+    </script>
+
 </body>
 </html>

@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Hadith Generator</title>
+    <title>Random Ayah Generator</title>
     <link rel="stylesheet" href="../css/nabvar.css">
     <link rel="stylesheet" href="../css/hadith.css">
+    <link rel="stylesheet" href="../css/footer.css">
 </head>
 <body>
 
@@ -22,12 +23,10 @@
                 <li><a href="../html/media.html">মিডিয়া</a></li>
                 <li><a href="../html/category.html">ক্যাটাগরিসমূহ</a></li>
                 <li><a href="#blogs">দেয়াল চিত্র</a></li>
-                <!-- <li><a href="#contact">ইতিহাস</a></li> -->
                 <li><a href="../html/hadith.html">হাদিস</a></li>
                 <li><a href="../html/prayerTime.html">নামাজের সময়</a></li>
                 <li><a href="../html/calendar.html">ক্যালেন্ডার</a></li>
                 <li><a href="../html/user_blog_submission.html">লেখালিখি</a></li>
-                
             </ul>
             <div class="search-box">
                 <input type="text" id="search-input" placeholder="Search...">
@@ -36,29 +35,63 @@
         </nav>
     </header>
 
-    <!-- Navbar -->
-    <div class="sidebar">
-        <ul>
-            <li><a href="#" id="bukhari-link">Bukhari</a></li>
-            <li><a href="#" id="muslim-link">Muslim</a></li>
-            <li><a href="#" id="abudawud-link">Abu Dawud</a></li>
-            <li><a href="#" id="ibnmajah-link">Ibn Majah</a></li>
-            <li><a href="#" id="tirmidhi-link">Tirmidhi</a></li>
-        </ul>
-    </div>
-
-    <!-- Main Content -->
     <div class="container">
-        <header>
-            <h1>ইসলামী হাদিস সংগ্রহ</h1>
-        </header>
+        <h1>📖 Random Ayah Generator</h1>
 
-        <div id="hadith-content" class="content">
-            <p>Select a Hadith book from the menu above to get a random Hadith.</p>
+        <!-- Search Bar for individual Ayah -->
+        <div class="search-container">
+            <input type="number" id="ayahNumberInput" placeholder="Enter Ayah number" min="1" max="6236">
+            <button onclick="getSpecificAyah()">🔍 Search Ayah</button>
         </div>
 
-        <button id="fetch-button">অন্য একটি সুন্দর হাদিস পড়ুন</button>
+        <button onclick="getRandomAyah()">🔄 নতুন আয়াত দেখুন</button>
+        
+        <div class="ayah" id="ayah"></div>
+
+        <!-- Audio Player for Ayah -->
+        <div id="audioPlayer" style="display:none;">
+            <audio id="ayahAudio" controls>
+                <source id="audioSource" src="" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
     </div>
+
+    <!-- Footer section -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section about">
+                <h2>আমাদের সম্পর্কে</h2>
+                <p>আমাদের ব্লগ ইসলামিক শিক্ষা, সংস্কৃতি এবং সম্প্রদায়ের উন্নয়নের জন্য নিবেদিত। আমাদের সাথে থাকুন এবং ইসলামের আলোকে জীবনযাপন করুন।</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-section links">
+                <h2>লিঙ্কসমূহ</h2>
+                <ul>
+                    <li><a href="/quran"><i class="fas fa-quran"></i> কুরআন তেলাওয়াত</a></li>
+                    <li><a href="/hadith"><i class="fas fa-book"></i> হাদিস সমগ্র</a></li>
+                    <li><a href="/articles"><i class="fas fa-pen-nib"></i> ইসলামিক প্রবন্ধ</a></li>
+                    <li><a href="/dua"><i class="fas fa-hands-praying"></i> দোয়া ও যিকির</a></li>
+                </ul>
+            </div>
+            <div class="footer-section contact">
+                <h2>যোগাযোগ</h2>
+                <p><i class="fas fa-mosque"></i> পরকাল ব্লগিং ওয়েবসাইট</p>
+                <p><i class="fas fa-map-marker-alt"></i> ঢাকা, বাংলাদেশ</p>
+                <p><i class="fas fa-phone"></i> +৮৮০১৭৮০-৯৪৬২৪৯</p>
+                <p><i class="fas fa-envelope"></i> 4819abin@gmail.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <span id="current-year"></span> পরকাল. সকল অধিকার সংরক্ষিত।</p>
+            <p>মৃত্যু সত্য, এর জন্য সর্বদা প্রস্তুত থাকো।</p>
+        </div>
+    </footer>
 
     <script src="../js/hadith.js"></script>
 </body>

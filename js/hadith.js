@@ -1,132 +1,130 @@
-// DOM Elements
-const fetchButton = document.getElementById('fetch-button');
-const hadithContent = document.getElementById('hadith-content');
-const bookLinks = {
-    bukhari: "https://random-hadith-generator.vercel.app/bukhari/",
-    muslim: "https://random-hadith-generator.vercel.app/muslim/",
-    abudawud: "https://random-hadith-generator.vercel.app/abudawud/",
-    ibnmajah: "https://random-hadith-generator.vercel.app/ibnmajah/",
-    tirmidhi: "https://random-hadith-generator.vercel.app/tirmidhi/"
-};
+function getRandomAyah() {
+    const randomAyahNumber = Math.floor(Math.random() * 6236) + 1;
+    const apiUrl = `http://api.alquran.cloud/v1/ayah/${randomAyahNumber}`;
 
-const bookLimits = {
-    bukhari: 7563,
-    muslim: 3032,
-    abudawud: 3998,
-    ibnmajah: 4342,
-    tirmidhi: 3956
-};
-
-let selectedBook = 'bukhari'; // Default book
-
-// Add event listeners to the navbar links
-document.getElementById('bukhari-link').addEventListener('click', () => setSelectedBook('bukhari'));
-document.getElementById('muslim-link').addEventListener('click', () => setSelectedBook('muslim'));
-document.getElementById('abudawud-link').addEventListener('click', () => setSelectedBook('abudawud'));
-document.getElementById('ibnmajah-link').addEventListener('click', () => setSelectedBook('ibnmajah'));
-document.getElementById('tirmidhi-link').addEventListener('click', () => setSelectedBook('tirmidhi'));
-
-// Add event listener to fetch random Hadith when the button is clicked
-fetchButton.addEventListener('click', fetchHadith);
-
-// Function to set the selected book and fetch a random Hadith
-function setSelectedBook(book) {
-    selectedBook = book;
-    fetchHadith(); // Fetch Hadith when a book is selected
-    highlightSelectedBook(book);
-}
-
-// Function to highlight the selected book in the navbar
-function highlightSelectedBook(book) {
-    for (const key in bookLinks) {
-        const link = document.getElementById(`${key}-link`);
-        if (key === book) {
-            link.style.backgroundColor = '#007BFF';
-            link.style.color = 'white';
-        } else {
-            link.style.backgroundColor = '';
-            link.style.color = '';
-        }
-    }
-}
-
-// Function to fetch Hadith from the selected book API
-function fetchHadith() {
-    const randomId = Math.floor(Math.random() * bookLimits[selectedBook]) + 1;
-    fetch(`${bookLinks[selectedBook]}${randomId}`)
+    fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
-            if (!data || !data.data) {
-                hadithContent.innerHTML = `<div class="error">Error fetching data. No Hadith found.</div>`;
-                return;
-            }
+            if (data.data) {
+                const arabicText = data.data.text;
+                const surahName = data.data.surah.englishName;
+                const ayahNumber = data.data.number;
 
-            const hadithData = data.data;
-            renderHadith(hadithData);
+                // Get translation for English
+                const englishTranslationUrl = `http://api.alquran.cloud/v1/ayah/${randomAyahNumber}/editions/quran-uthmani,en.asad`;
+                fetch(englishTranslationUrl)
+                    .then(response => response.json())
+                    .then(englishData => {
+                        const englishTranslation = englishData.data[1].text; // English translation
+
+                        // Get translation for Bangla
+                        const banglaTranslationUrl = `http://api.alquran.cloud/v1/ayah/${randomAyahNumber}/editions/bn.bengali`;
+                        fetch(banglaTranslationUrl)
+                            .then(response => response.json())
+                            .then(banglaData => {
+                                const banglaTranslation = banglaData.data[0].text; // Bangla translation
+
+                                // Display the Ayah and its metadata
+                                document.getElementById("ayah").innerHTML = `
+                                    <p><strong>📜 Arabic:</strong> ${arabicText}</p>
+                                    <p><strong>📖 English:</strong> ${englishTranslation}</p>
+                                    <p><strong>🌿 বাংলা:</strong> ${banglaTranslation}</p>
+                                    <div class="metadata">
+                                        <p><strong>Surah:</strong> ${surahName}</p>
+                                        <p><strong>Ayah Number:</strong> ${ayahNumber}</p>
+                                    </div>
+                                `;
+
+                                // Get audio for the Ayah
+                                const audioUrl = `http://api.alquran.cloud/v1/ayah/${randomAyahNumber}/audio/ar.abdulsamadturki`;
+                                document.getElementById("audioSource").src = audioUrl;
+                                document.getElementById("ayahAudio").load();
+                                document.getElementById("audioPlayer").style.display = "block"; // Show audio player
+                            })
+                            .catch(error => {
+                                console.error("Error fetching Bangla Translation:", error);
+                                document.getElementById("ayah").innerHTML = "❌ বাংলা অনুবাদ লোড করা যায়নি, আবার চেষ্টা করুন।";
+                            });
+                    })
+                    .catch(error => {
+                        console.error("Error fetching English Translation:", error);
+                        document.getElementById("ayah").innerHTML = "❌ ইংরেজি অনুবাদ লোড করা যায়নি, আবার চেষ্টা করুন।";
+                    });
+            } else {
+                document.getElementById("ayah").innerHTML = "❌ আয়াত লোড করা যায়নি, আবার চেষ্টা করুন।";
+            }
         })
         .catch(error => {
-            console.error('Error:', error);
-            hadithContent.innerHTML = `<div class="error">Something went wrong.</div>`;
+            console.error("Error fetching Ayah:", error);
+            document.getElementById("ayah").innerHTML = "❌ আয়াত লোড করা যায়নি, আবার চেষ্টা করুন।";
         });
 }
 
-// Function to render the fetched Hadith on the page
-function renderHadith(hadithData) {
-    const book = hadithData.book.trim();
-    const chapter = hadithData.chapterName.trim();
-    const bookname = hadithData.bookName.trim();
-    const hadithEnglish = hadithData.hadith_english.trim();
-    const header = hadithData.header.trim();
-    const reference = hadithData.refno.trim();
+function getSpecificAyah() {
+    const ayahNumber = document.getElementById("ayahNumberInput").value;
 
-    hadithContent.innerHTML = `
-        <div class="hadith-details">
-            <h2>${book}</h2>
-            <p><strong>Book Name:</strong> ${bookname}</p>
-            <p><strong>Chapter:</strong> ${chapter}</p>
-            <p><strong>Hadith (English):</strong> ${hadithEnglish}</p>
-            <p><strong>Source:</strong> ${header}</p>
-            <p><strong>Reference:</strong> ${reference}</p>
-        </div>
-    `;
+    // Check if the input is valid
+    if (!ayahNumber || ayahNumber < 1 || ayahNumber > 6236) {
+        document.getElementById("ayah").innerHTML = "❌ Invalid Ayah number, please enter a number between 1 and 6236.";
+        return;
+    }
 
-    // Translate the English Hadith after displaying the original
-    translateText(hadithEnglish, 'bn');
+    const apiUrl = `http://api.alquran.cloud/v1/ayah/${ayahNumber}`;
+
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data.data) {
+                const arabicText = data.data.text;
+                const surahName = data.data.surah.englishName;
+                const ayahNumber = data.data.number;
+
+                // Get translation for English
+                const englishTranslationUrl = `http://api.alquran.cloud/v1/ayah/${ayahNumber}/editions/quran-uthmani,en.asad`;
+                fetch(englishTranslationUrl)
+                    .then(response => response.json())
+                    .then(englishData => {
+                        const englishTranslation = englishData.data[1].text; // English translation
+
+                        // Get translation for Bangla
+                        const banglaTranslationUrl = `http://api.alquran.cloud/v1/ayah/${ayahNumber}/editions/bn.bengali`;
+                        fetch(banglaTranslationUrl)
+                            .then(response => response.json())
+                            .then(banglaData => {
+                                const banglaTranslation = banglaData.data[0].text; // Bangla translation
+
+                                // Display the Ayah and its metadata
+                                document.getElementById("ayah").innerHTML = `
+                                    <p><strong>📜 Arabic:</strong> ${arabicText}</p>
+                                    <p><strong>📖 English:</strong> ${englishTranslation}</p>
+                                    <p><strong>🌿 বাংলা:</strong> ${banglaTranslation}</p>
+                                    <div class="metadata">
+                                        <p><strong>Surah:</strong> ${surahName}</p>
+                                        <p><strong>Ayah Number:</strong> ${ayahNumber}</p>
+                                    </div>
+                                `;
+
+                                // Get audio for the Ayah
+                                const audioUrl = `http://api.alquran.cloud/v1/ayah/${ayahNumber}/audio/ar.abdulsamadturki`;
+                                document.getElementById("audioSource").src = audioUrl;
+                                document.getElementById("ayahAudio").load();
+                                document.getElementById("audioPlayer").style.display = "block"; // Show audio player
+                            })
+                            .catch(error => {
+                                console.error("Error fetching Bangla Translation:", error);
+                                document.getElementById("ayah").innerHTML = "❌ বাংলা অনুবাদ লোড করা যায়নি, আবার চেষ্টা করুন।";
+                            });
+                    })
+                    .catch(error => {
+                        console.error("Error fetching English Translation:", error);
+                        document.getElementById("ayah").innerHTML = "❌ ইংরেজি অনুবাদ লোড করা যায়নি, আবার চেষ্টা করুন।";
+                    });
+            } else {
+                document.getElementById("ayah").innerHTML = "❌ আয়াত লোড করা যায়নি, আবার চেষ্টা করুন।";
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching Ayah:", error);
+            document.getElementById("ayah").innerHTML = "❌ আয়াত লোড করা যায়নি, আবার চেষ্টা করুন।";
+        });
 }
-
-// Function to translate text using Google Translator API via RapidAPI
-function translateText(text, targetLanguage) {
-    const data = JSON.stringify({
-        from: 'en',
-        to: targetLanguage,
-        text: text
-    });
-
-    const xhr = new XMLHttpRequest();
-    xhr.withCredentials = true;
-
-    xhr.addEventListener('readystatechange', function () {
-        if (this.readyState === this.DONE) {
-            const response = JSON.parse(this.responseText);
-            const translatedText = response.trans;
-            renderTranslatedHadith(translatedText);
-        }
-    });
-
-    xhr.open('POST', 'https://google-translate113.p.rapidapi.com/api/v1/translator/text');
-    xhr.setRequestHeader('x-rapidapi-key', '947c8d03b9mshd8bd8ed20c26b92p162a6ajsn2e8732db163b'); // Replace with your RapidAPI key
-    xhr.setRequestHeader('x-rapidapi-host', 'google-translate113.p.rapidapi.com');
-    xhr.setRequestHeader('Content-Type', 'application/json');
-
-    xhr.send(data);
-}
-
-// Function to render the translated Hadith
-function renderTranslatedHadith(translatedText) {
-    const translatedSection = document.createElement('p');
-    translatedSection.innerHTML = `<strong>Translated (Bangla):</strong> ${translatedText}`;
-    hadithContent.appendChild(translatedSection);
-}
-
-// Initial fetch on page load for the default selected book
-fetchHadith();
