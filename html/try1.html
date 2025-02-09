@@ -1,157 +1,189 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Quran Translations</title>
-<style>
-body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    background-color: #f4f4f4;
-    color: #333;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Hadith Generator</title>
+    <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="quran.css">
+    <style>
+        /* Custom CSS for Hadith Website - added to quran.css would also work */
+        #hadith-container {
+            border-top: 3px solid #ffb74d; /* Amber color for Hadith section */
+            padding-top: 25px;
+        }
 
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+        .hadith-card {
+            background-color: #fff8e1; /* Light Amber background for card */
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            border: 1px solid #ffecb3; /* Lighter amber border */
+        }
 
-h1 {
-    text-align: center;
-    color: #28a745; /* Green color for heading */
-}
+        .hadith-card h2 {
+            color: #e65100; /* Deep orange for Hadith title */
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
 
-#translation-selector {
-    margin-bottom: 20px;
-    text-align: center;
-}
+        .hadith-card p {
+            line-height: 1.8;
+            color: #444;
+            font-size: 1.1rem;
+            text-align: left; /* Adjust text alignment as needed */
+        }
 
-select {
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    margin-right: 10px;
-}
+        .hadith-options {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #28a745; /* Green color for button */
-    color: white;
-    cursor: pointer;
-}
+        .hadith-options select, .hadith-options input[type="number"], .hadith-options button {
+            margin: 10px;
+        }
 
-button:hover {
-    background-color: #218838; /* Darker green on hover */
-}
-
-#quran-display {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-}
-
-.verse {
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px dashed #eee;
-}
-
-.verse:last-child {
-    border-bottom: none;
-}
-
-.chapter-verse {
-    font-weight: bold;
-    color: #007bff; /* Blue color for chapter and verse */
-    margin-bottom: 5px;
-}
-
-.verse-text {
-    line-height: 1.6;
-}
-</style>
+        #hadith-display {
+            text-align: center;
+            color: #555;
+        }
+    </style>
 </head>
 <body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Hadith_Qudsi.svg/800px-Hadith_Qudsi.svg.png" alt="Hadith Logo">
+                <h1>Hadith Collection</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li class="dropdown">
+                    <a href="#">Collections</a>
+                    <ul class="dropdown-content">
+                        <li><a href="#">Sahih Al-Bukhari</a></li>
+                        <li><a href="#">Sahih Muslim</a></li>
+                        <li><a href="#">Abu Dawud</a></li>
+                        <li><a href="#">Ibn Majah</a></li>
+                        <li><a href="#">Al-Tirmidhi</a></li>
+                    </ul>
+                </li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+            <div class="search-box">
+                <input type="text" placeholder="Search Hadith...">
+                <button>Search</button>
+            </div>
+        </nav>
+    </header>
 
-<div class="container">
-    <h1>Quran Translations</h1>
+    <div class="container">
+        <h1>Random Hadith Generator</h1>
+        <p style="text-align: center; margin-bottom: 30px; color: #777;">Explore Hadith from various collections.</p>
 
-    <div id="translation-selector">
-        <select id="language-select">
-            <option value="" disabled selected>Select Language</option>
-            <option value="fas-abdolmohammaday">Arabic</option>
-            <option value="eng-ahmedali">English</option>
-            <option value="ben-muhiuddinkhan">Bengali</option>
-            <option value="banglish-araquran">Banglish</option>
-        </select>
-        <button onclick="loadTranslation()">Load Translation</button>
+        <section id="hadith-options" class="hadith-options">
+            <select id="hadith-collection">
+                <option value="" disabled selected>Select Hadith Collection</option>
+                <option value="bukhari">Sahih Al-Bukhari</option>
+                <option value="muslim">Sahih Muslim</option>
+                <option value="abudawud">Abu Dawud</option>
+                <option value="ibnmajah">Ibn Majah</option>
+                <option value="tirmidhi">Al-Tirmidhi</option>
+            </select>
+            <button onclick="getRandomHadith()">Get Random Hadith</button>
+            <br>
+            <label for="hadithNumber" style="margin-right: 10px;">Get Hadith Number:</label>
+            <input type="number" id="hadithNumber" min="1" value="1" style="width: 70px;">
+            <button onclick="getCustomHadith()">Get Custom Hadith</button>
+        </section>
+
+        <section id="hadith-container" class="quran-display">
+            <div id="hadith-display">
+                <p style="text-align: center; color: #777;">Click 'Get Random Hadith' or 'Get Custom Hadith' to display Hadith.</p>
+            </div>
+        </section>
     </div>
 
-    <div id="quran-display">
-        <p>Please select a language and load a translation.</p>
-    </div>
-</div>
+    <script>
+        const hadithCollectionSelect = document.getElementById('hadith-collection');
+        const hadithDisplayDiv = document.getElementById('hadith-display');
+        const hadithNumberInput = document.getElementById('hadithNumber');
 
-<script>
-const quranDisplay = document.getElementById('quran-display');
-const languageSelect = document.getElementById('language-select');
+        const baseUrl = "https://random-hadith-generator.vercel.app";
 
-const translations = {
-    "fas-abdolmohammaday": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quranacademy.json",
-    "eng-ahmedali": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-ahmedali.json",
-    "ben-muhiuddinkhan": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ben-muhiuddinkhan.json",
-    "banglish-araquran": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quran-lad4.json"
-};
+        function getRandomHadith() {
+            const collection = hadithCollectionSelect.value;
+            if (!collection) {
+                alert("Please select a Hadith collection.");
+                return;
+            }
 
-async function loadTranslation() {
-    const selectedLanguage = languageSelect.value;
-    if (!selectedLanguage) {
-        alert("Please select a language.");
-        return;
-    }
+            fetch(`${baseUrl}/${collection}/random`)
+                .then(response => response.json())
+                .then(data => {
+                    displayHadith(collection, data);
+                })
+                .catch(error => {
+                    console.error("Error fetching random Hadith:", error);
+                    hadithDisplayDiv.innerHTML = "<p>Error fetching Hadith. Please try again.</p>";
+                });
+        }
 
-    const translationURL = translations[selectedLanguage];
+        function getCustomHadith() {
+            const collection = hadithCollectionSelect.value;
+            const hadithNumber = hadithNumberInput.value;
 
-    try {
-        const response = await fetch(translationURL);
-        const data = await response.json();
-        displayQuran(data.quran);
-    } catch (error) {
-        console.error("Error fetching translation:", error);
-        quranDisplay.innerHTML = "<p>Failed to load translation.</p>";
-    }
-}
+            if (!collection) {
+                alert("Please select a Hadith collection.");
+                return;
+            }
+            if (!hadithNumber || isNaN(hadithNumber) || parseInt(hadithNumber) < 1) {
+                alert("Please enter a valid Hadith number.");
+                return;
+            }
 
-function displayQuran(quranData) {
-    quranDisplay.innerHTML = ''; // Clear previous content
-    if (!quranData || quranData.length === 0) {
-        quranDisplay.innerHTML = "<p>No verses found in this translation.</p>";
-        return;
-    }
+            fetch(`${baseUrl}/${collection}/${hadithNumber}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.number) {
+                        displayHadith(collection, data);
+                    } else {
+                        hadithDisplayDiv.innerHTML = `<p>Hadith number ${hadithNumber} not found in ${collection}. Please check the number and collection.</p>`;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching custom Hadith:", error);
+                    hadithDisplayDiv.innerHTML = "<p>Error fetching Hadith. Please try again.</p>";
+                });
+        }
 
-    quranData.forEach(verse => {
-        const verseDiv = document.createElement('div');
-        verseDiv.classList.add('verse');
 
-        const chapterVerseSpan = document.createElement('div');
-        chapterVerseSpan.classList.add('chapter-verse');
-        chapterVerseSpan.textContent = `Chapter ${verse.chapter}, Verse ${verse.verse}`;
-        verseDiv.appendChild(chapterVerseSpan);
+        function displayHadith(collectionName, hadithData) {
+            const collectionDisplayName = collectionName.charAt(0).toUpperCase() + collectionName.slice(1); // e.g., "Bukhari"
+            hadithDisplayDiv.innerHTML = ''; // Clear previous content
 
-        const verseTextP = document.createElement('p');
-        verseTextP.classList.add('verse-text');
-        verseTextP.textContent = verse.text;
-        verseDiv.appendChild(verseTextP);
+            const hadithCard = document.createElement('div');
+            hadithCard.classList.add('hadith-card');
 
-        quranDisplay.appendChild(verseDiv);
-    });
-}
-</script>
+            const title = document.createElement('h2');
+            title.textContent = `${collectionDisplayName} - Hadith #${hadithData.number}`;
+            hadithCard.appendChild(title);
 
+            const arabicText = document.createElement('p');
+            arabicText.innerHTML = `<strong>Arabic:</strong> <br>${hadithData.arabic}`; // Use innerHTML for <br>
+            hadithCard.appendChild(arabicText);
+
+            const translationText = document.createElement('p');
+            translationText.innerHTML = `<strong>Translation:</strong> <br>${hadithData.translation}`; // Use innerHTML for <br>
+            hadithCard.appendChild(translationText);
+
+            hadithDisplayDiv.appendChild(hadithCard);
+        }
+
+
+    </script>
 </body>
 </html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Quran Translations</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu+Draft:wght@400;700&family=Segoe+UI:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/footer.css">
+<link rel="stylesheet" href="../css/nabvar.css">
+<link rel="stylesheet" href="../css/quran.css">
+</head>
+<body>
+
+<!-- Header Section -->
+<header class="header">
+    <nav class="navbar">
+        <div class="logo">
+            <a href="../index.html">
+                <img src="../images/logoo.png" alt="Media Logo" class="logo-image">
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="../index.html">মূলপাতা</a></li>
+            <li><a href="../html/media.html">মিডিয়া</a></li>
+            <li><a href="../html/category.html">ক্যাটাগরিসমূহ</a></li>
+            <li class="dropdown">
+                <a href="#">কুরআন 
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M1.5 5.5L8 12l6.5-6.5H1.5z"/>
+                    </svg>
+                </a>  
+                <ul class="dropdown-content">
+                    <li><a href="../html/hadith.html">বাংলা অর্থসহ আয়াত</a></li>
+                    <li><a href="../html/surah.html">সকল সূরা</a></li>
+                    <li><a href="../html/tasbhi.html">তাসবিহ</a></li>
+                    <li><a href="../html/quran.html">কুরআন তেলাওয়াত</a></li>
+                </ul>
+            </li>
+            <!-- <li><a href="#contact">ইতিহাস</a></li> -->
+            <li><a href="../html/hadith.html">আয়াত</a></li>
+            <li><a href="../html/prayerTime.html">নামাজের সময়</a></li>
+            <li><a href="../html/calendar.html">ক্যালেন্ডার</a></li>
+            <li><a href="../html/user_blog_submission.html">লেখালিখি</a></li>
+            
+            
+        </ul>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search...">
+            <button id="search-btn">Search</button>
+        </div>
+    </nav>
+</header>
+
+<div class="container">
+
+    
+    <h1>Quran Translations</h1>
+
+    <div id="surah-selector">
+        <select id="surah-select" onchange="loadSurah()">
+            <option value="" disabled selected>Select Surah</option>
+        </select>
+        <label for="scrollSpeedInput" style="margin-left: 20px;">Scroll Speed (ms):</label>
+        <input type="number" id="scrollSpeedInput" value="150000" placeholder="Scroll Speed (ms):" min="100" step="100" style="width: 150px;">
+        <button onclick="scrollToBottom()" id="scrollButton">Scroll to Bottom</button>
+    </div>
+
+    <div id="surah-info">
+        </div>
+
+    <div id="quran-display">
+        <p style="text-align: center; color: #777;">Please select a Surah to load.</p>
+    </div>
+</div>
+<footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section about">
+                <h2>আমাদের সম্পর্কে</h2>
+                <p>আমাদের ব্লগ ইসলামিক শিক্ষা, সংস্কৃতি এবং সম্প্রদায়ের উন্নয়নের জন্য নিবেদিত। আমাদের সাথে থাকুন এবং ইসলামের আলোকে জীবনযাপন করুন।</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+                
+                
+            </div>
+            <div class="footer-section links">
+                <h2>লিঙ্কসমূহ</h2>
+                <ul>
+                    <li><a href="/quran"><i class="fas fa-quran"></i> কুরআন তেলাওয়াত</a></li>
+                    <li><a href="/hadith"><i class="fas fa-book"></i> হাদিস সমগ্র</a></li>
+                    <li><a href="/articles"><i class="fas fa-pen-nib"></i> ইসলামিক প্রবন্ধ</a></li>
+                    <li><a href="/dua"><i class="fas fa-hands-praying"></i> দোয়া ও যিকির</a></li>
+                </ul>
+            </div>
+            <div class="footer-section contact">
+                <h2>যোগাযোগ</h2>
+                <p><i class="fas fa-mosque"></i>  পরকাল ব্লগিং ওয়েবসাইট</p>
+                <p><i class="fas fa-map-marker-alt"></i> ঢাকা, বাংলাদেশ</p>
+                <p><i class="fas fa-phone"></i> +৮৮০১৭৮০-৯৪৬২৪৯</p>
+                <p><i class="fas fa-envelope"></i> 4819abin@gmail.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <span id="current-year"></span> পরকাল. সকল অধিকার সংরক্ষিত।</p>
+            <p>মৃত্যু সত্য, এর জন্য সর্বদা প্রস্তুত থাকো।</p>
+        </div>
+    </footer>
+
+<script src="../js/quran.js"></script>
+
+</body>
+</html>
