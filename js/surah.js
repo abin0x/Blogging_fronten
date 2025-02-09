@@ -57,7 +57,7 @@ const surahSelect = document.getElementById('surahSelect');
                             mainAudio.addEventListener('ended', function onEnded() {
                                 mainAudio.removeEventListener('ended', onEnded);
                                 // Continuous playback (uncomment if needed)
-                                // playAyah(index + 1);
+                                playAyah(index + 1);
                             });
                         }
                     }
